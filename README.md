@@ -1,6 +1,8 @@
 
 # Go sample project to expose traces
 
+`WORK IN PROGRESS / NEVER ENDING STORY`
+
 ## Run
 
 ---
