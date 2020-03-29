@@ -6,10 +6,13 @@ import (
 	"time"
 
 	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/uber/jaeger-client-go"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
 	jaegerlog "github.com/uber/jaeger-client-go/log"
+	jaegerlogzap "github.com/uber/jaeger-client-go/log/zap"
 	"github.com/uber/jaeger-lib/metrics"
+	jaegerprom "github.com/uber/jaeger-lib/metrics/prometheus"
 
 	"github.com/bygui86/go-traces/logging"
 )
@@ -26,34 +29,6 @@ import (
 */
 
 func InitSample(serviceName string) io.Closer {
-	// Sample configuration for testing. Use constant sampling to sample every trace
-	// and enable LogSpan to log every span via configured Logger.
-	cfg := jaegercfg.Configuration{
-		Sampler: &jaegercfg.SamplerConfig{
-			Type:  jaeger.SamplerTypeConst,
-			Param: 1,
-		},
-		Reporter: &jaegercfg.ReporterConfig{
-			LogSpans:            true,
-			BufferFlushInterval: 1 * time.Second,
-		},
-	}
-
-	// Initialize tracer with a logger and a metrics factory
-	closer, tracerErr := cfg.InitGlobalTracer(
-		serviceName,
-	)
-	if tracerErr != nil {
-		logging.SugaredLog.Errorf("Tracer creation failed: %s", tracerErr.Error())
-		os.Exit(501)
-	}
-
-	logging.SugaredLog.Infof("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
-
-	return closer
-}
-
-func InitTestingTracing(serviceName string) io.Closer {
 	// Sample configuration for testing. Use constant sampling to sample every trace
 	// and enable LogSpan to log every span via configured Logger.
 	cfg := jaegercfg.Configuration{
@@ -84,7 +59,37 @@ func InitTestingTracing(serviceName string) io.Closer {
 		os.Exit(501)
 	}
 
-	logging.SugaredLog.Infof("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	logging.SugaredLog.Debugf("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+
+	return closer
+}
+
+func InitTestingTracing(serviceName string) io.Closer {
+	// Sample configuration for testing. Use constant sampling to sample every trace
+	// and enable LogSpan to log every span via configured Logger.
+	cfg := jaegercfg.Configuration{
+		Sampler: &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans:            true,
+			BufferFlushInterval: 1 * time.Second,
+		},
+	}
+
+	// Initialize tracer with a logger and a metrics factory
+	closer, tracerErr := cfg.InitGlobalTracer(
+		serviceName,
+		jaegercfg.Logger(jaegerlogzap.NewLogger(logging.Log)),
+		jaegercfg.Metrics(jaegerprom.New(jaegerprom.WithRegisterer(prometheus.DefaultRegisterer))),
+	)
+	if tracerErr != nil {
+		logging.SugaredLog.Errorf("Tracer creation failed: %s", tracerErr.Error())
+		os.Exit(501)
+	}
+
+	logging.SugaredLog.Debugf("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
 
 	return closer
 }
@@ -93,24 +98,18 @@ func InitProductionTracing(serviceName string) io.Closer {
 	// Recommended configuration for production.
 	cfg := jaegercfg.Configuration{}
 
-	// Example logger and metrics factory. Use github.com/uber/jaeger-client-go/log
-	// and github.com/uber/jaeger-lib/metrics respectively to bind to real logging and metrics
-	// frameworks.
-	jLogger := jaegerlog.StdLogger
-	jMetricsFactory := metrics.NullFactory
-
 	// Initialize tracer with a logger and a metrics factory
 	closer, tracerErr := cfg.InitGlobalTracer(
 		serviceName,
-		jaegercfg.Logger(jLogger),
-		jaegercfg.Metrics(jMetricsFactory),
+		jaegercfg.Logger(jaegerlogzap.NewLogger(logging.Log)),
+		jaegercfg.Metrics(jaegerprom.New(jaegerprom.WithRegisterer(prometheus.DefaultRegisterer))),
 	)
 	if tracerErr != nil {
 		logging.SugaredLog.Errorf("Tracer creation failed: %s", tracerErr.Error())
 		os.Exit(501)
 	}
 
-	logging.SugaredLog.Infof("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	logging.SugaredLog.Debugf("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
 
 	return closer
 }

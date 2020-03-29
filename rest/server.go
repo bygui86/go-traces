@@ -23,7 +23,7 @@ const (
 )
 
 func NewServer() (*Server, error) {
-	logging.Log.Debug("Create new REST server")
+	logging.Log.Info("Create new REST server")
 
 	cfg := loadConfig()
 

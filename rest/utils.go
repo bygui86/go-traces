@@ -10,6 +10,8 @@ import (
 	"github.com/bygui86/go-traces/logging"
 )
 
+// SERVER
+
 func (s *Server) setupRouter() {
 	logging.Log.Debug("Create new router")
 
@@ -40,13 +42,18 @@ func (s *Server) setupHTTPServer() {
 	logging.Log.Error("HTTP server creation failed: REST server configurations not initialized")
 }
 
-func respondWithError(w http.ResponseWriter, code int, message string) {
-	respondWithJSON(w, code, map[string]string{"error": message})
+// HANDLERS
+
+func sendErrorResponse(writer http.ResponseWriter, code int, message string) {
+	sendJsonResponse(writer, code, map[string]string{"error": message})
 }
 
-func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+func sendJsonResponse(writer http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
-	w.Header().Set("Content-Type", "rest/json")
-	w.WriteHeader(code)
-	w.Write(response)
+	writer.Header().Set("Content-Type", "rest/json")
+	writer.WriteHeader(code)
+	_, err := writer.Write(response)
+	if err != nil {
+		logging.SugaredLog.Errorf("Error sending JSON response: %s", err.Error())
+	}
 }

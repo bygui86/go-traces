@@ -24,13 +24,23 @@ make run
 
 ---
 
-## REST endpoints
+## Servers
 
-- `GET /products` > Fetch a list of products in response to a valid 
-- `GET /products/{id}` > Fetch a product in response to a valid 
-- `POST /products` > Create a new product in response to a valid 
-- `PUT /products/{id}` > Update a product in response to a valid 
-- `DELETE /products/{id}` > Delete a product in response to a valid 
+### Monitoring
+
+URL: `localhost:9090/metrics`
+
+### Products endpoints
+
+Root URL: `localhost:8080/`
+
+| Method | URL | Description
+| --- | --- | --- |
+| GET | /products | Fetch list of products |
+| GET | /products/{id} | Fetch a product by ID |
+| POST | /products | Create a new product |
+| PUT | /products/{id} | Update an existing product retrieved by ID |
+| DELETE | /products/{id} | Delete a product by ID |
 
 ---
 
@@ -45,9 +55,9 @@ make run
 - https://www.jaegertracing.io/
 - https://github.com/jaegertracing/jaeger-client-go
 - https://github.com/jaegertracing/jaeger-client-go/blob/master/config/example_test.go
+- https://github.com/alextanhongpin/go-jaeger-trace
 
 ### TBD
-- https://github.com/alextanhongpin/go-jaeger-trace
 - https://medium.com/swlh/distributed-tracing-for-go-microservice-with-opentracing-1fc1aec76b3e
     - https://github.com/jfeng45/grpcservice
 

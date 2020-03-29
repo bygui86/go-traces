@@ -26,7 +26,7 @@ const (
 )
 
 func loadConfig() *config {
-	logging.Log.Debug("Load configurations")
+	logging.Log.Debug("Load REST configurations")
 	return &config{
 		DbHost:     utils.GetStringEnv(dbHostEnvVar, dbHostEnvVarDefault),
 		DbPort:     utils.GetIntEnv(dbPortEnvVar, dbPortEnvVarDefault),

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/bygui86/go-traces/logging"
+	"github.com/bygui86/go-traces/monitoring"
 	"github.com/bygui86/go-traces/rest"
 	"github.com/bygui86/go-traces/tracing"
 )
@@ -17,18 +18,40 @@ const (
 )
 
 var (
-	tracingCloser io.Closer
-	restServer    *rest.Server
+	monitoringServer *monitoring.Server
+	tracingCloser    io.Closer
+	restServer       *rest.Server
 )
 
+/*
+	TODO list
+		- [x] rest server with database
+		- [x] logging integration
+		- [x] monitoring integration
+		- [x] tracing integration
+		- [x] simple traces example
+		- [ ] propagated traces example
+		- [x] simple traces with logging
+		- [x] simple traces with monitoring
+		- [ ] improve monitoring packaged
+			- [ ] config (see rest)
+			- [ ] logging (see rest)
+			- [ ] new server (see rest)
+			- [ ] start go-routine (see rest)
+			- [ ] shutdown (see rest)
+		- [x] readme
+		- [x] makefile
+		- [x] dotenv
+		- [x] postman
+*/
 func main() {
+	initLogging()
+
 	logging.Log.Info("Start go-traces")
 
-	setupLogging()
+	monitoringServer = startMonitoringServer()
 
-	// TODO start monitoring
-
-	tracingCloser = tracing.InitSample(serviceName)
+	tracingCloser = tracing.InitTestingTracing(serviceName)
 
 	restServer = startRestServer()
 
@@ -39,12 +62,22 @@ func main() {
 	shutdownAndWait(3)
 }
 
-func setupLogging() {
+func initLogging() {
 	err := logging.InitGlobalLogger()
 	if err != nil {
 		logging.SugaredLog.Errorf("Logging setup failed: %s", err.Error())
 		os.Exit(501)
 	}
+}
+
+func startMonitoringServer() *monitoring.Server {
+	server := monitoring.NewServer()
+	logging.Log.Debug("Monitoring server successfully created")
+
+	server.Start()
+	logging.Log.Debug("Monitoring successfully started")
+
+	return server
 }
 
 func startRestServer() *rest.Server {
@@ -59,6 +92,8 @@ func startRestServer() *rest.Server {
 
 	server.Start()
 	logging.Log.Debug("REST server successfully started")
+
+	rest.RegisterCustomMetrics()
 
 	return server
 }
@@ -78,6 +113,8 @@ func shutdownAndWait(timeout int) {
 	if tracingErr != nil {
 		logging.SugaredLog.Errorf("Tracing closure failed: %s", tracingErr.Error())
 	}
+
+	monitoringServer.Shutdown()
 
 	time.Sleep(time.Duration(timeout+1) * time.Second)
 }
