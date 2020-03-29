@@ -11,13 +11,13 @@ func GetProducts(db *sql.DB, start, count int) ([]Product, error) {
 	}
 	defer rows.Close()
 
-	var products []Product
+	products := make([]Product, 0)
 	for rows.Next() {
-		var p Product
-		if err := rows.Scan(&p.ID, &p.Name, &p.Price); err != nil {
+		var prod Product
+		if err := rows.Scan(&prod.ID, &prod.Name, &prod.Price); err != nil {
 			return nil, err
 		}
-		products = append(products, p)
+		products = append(products, prod)
 	}
 
 	return products, nil
