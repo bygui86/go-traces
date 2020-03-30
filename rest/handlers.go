@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"net/http"
@@ -16,9 +17,11 @@ import (
 )
 
 func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) {
-	span := opentracing.StartSpan("get-products")
+	span, ctx := opentracing.StartSpanFromContext(context.Background(), "get-products-handler")
 	startTimer := time.Now()
 	defer span.Finish()
+
+	span.Context()
 
 	logging.Log.Info("Get products")
 
@@ -30,9 +33,14 @@ func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) 
 	if start < 0 {
 		start = 0
 	}
-	products, err := database.GetProducts(s.dbConnection, start, count)
+	products, err := database.GetProducts(s.dbConnection, start, count, ctx)
 	if err != nil {
-		sendErrorResponse(writer, http.StatusInternalServerError, "Get products failed: "+err.Error())
+		errMsg := "Get products failed: " + err.Error()
+		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
+
+		span.SetTag("products-found", 0)
+		span.SetTag("error", errMsg)
+		span.LogKV("products-found", 0, "error", errMsg)
 		return
 	}
 
@@ -46,38 +54,45 @@ func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) 
 }
 
 func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
-	span := opentracing.StartSpan("get-product")
+	span, ctx := opentracing.StartSpanFromContext(context.Background(), "get-product-handler")
 	startTimer := time.Now()
 	defer span.Finish()
 
 	vars := mux.Vars(request)
 	id, idErr := strconv.Atoi(vars["id"])
 	if idErr != nil {
-		sendErrorResponse(writer, http.StatusBadRequest, "Get product failed: Invalid product ID")
+		errMsg := "Get product failed: Invalid product ID"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
+
+		span.SetTag("error", errMsg)
+		span.LogKV("error", errMsg)
 		return
 	}
 
 	logging.SugaredLog.Infof("Get product by ID: %d", id)
-
-	span.SetTag("requested-product-id", id)
+	span.SetTag("product-id", id)
 
 	product := &database.Product{ID: id}
-	getErr := database.GetProduct(s.dbConnection, product)
+	getErr := database.GetProduct(s.dbConnection, product, ctx)
 	if getErr != nil {
+		var errMsg string
 		switch getErr {
 		case sql.ErrNoRows:
-			sendErrorResponse(writer, http.StatusNotFound, "Get product failed: product not found")
+			errMsg = "Get product failed: product not found"
+			sendErrorResponse(writer, http.StatusNotFound, errMsg)
 		default:
-			sendErrorResponse(writer, http.StatusInternalServerError, getErr.Error())
+			errMsg = getErr.Error()
+			sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
 		}
 
-		span.SetTag("requested-product-found", false)
-		span.LogKV("requested-product-id", id, "requested-product-found", false)
+		span.SetTag("product-found", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-id", id, "product-found", false, "error", errMsg)
 		return
 	}
 
-	span.SetTag("requested-product-found", true)
-	span.LogKV("requested-product-id", id, "requested-product-found", true)
+	span.SetTag("product-found", true)
+	span.LogKV("product-id", id, "product-found", true)
 
 	sendJsonResponse(writer, http.StatusOK, product)
 
@@ -86,36 +101,39 @@ func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request) {
-	span := opentracing.StartSpan("create-product")
+	span, ctx := opentracing.StartSpanFromContext(context.Background(), "create-product-handler")
 	startTimer := time.Now()
 	defer span.Finish()
 
 	var product database.Product
-	err := json.NewDecoder(request.Body).Decode(&product)
-	if err != nil {
-		sendErrorResponse(writer, http.StatusBadRequest, "Create product failed: invalid request payload")
+	unmarshErr := json.NewDecoder(request.Body).Decode(&product)
+	if unmarshErr != nil {
+		errMsg := "Create product failed: invalid request payload"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
+
+		span.SetTag("product-created", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-created", false, "error", errMsg)
 		return
 	}
 	defer request.Body.Close()
 
 	logging.SugaredLog.Infof("Create product %s", product.String())
 
-	if err := database.CreateProduct(s.dbConnection, &product); err != nil {
-		sendErrorResponse(writer, http.StatusInternalServerError, "Create product failed: "+err.Error())
+	createErr := database.CreateProduct(s.dbConnection, &product, ctx)
+	if createErr != nil {
+		errMsg := "Create product failed: " + createErr.Error()
+		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
 
-		span.SetTag("new-product-created", false)
-		span.LogKV("new-product-created", false)
+		span.SetTag("product-created", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-created", false, "error", errMsg)
 		return
 	}
 
-	span.SetTag("new-product-id", product.ID)
-	span.SetTag("new-product-name", product.Name)
-	span.SetTag("new-product-price", product.Price)
-	span.SetTag("new-product-created", true)
-	span.LogKV("new-product-id", product.ID,
-		"new-product-name", product.Name,
-		"new-product-price", product.Price,
-		"new-product-created", true)
+	span.SetTag("product", product.String())
+	span.SetTag("product-created", true)
+	span.LogKV("product", product.String(), "product-created", true)
 
 	sendJsonResponse(writer, http.StatusCreated, product)
 
@@ -124,27 +142,31 @@ func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request
 }
 
 func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request) {
-	span := opentracing.StartSpan("update-product")
+	span, ctx := opentracing.StartSpanFromContext(context.Background(), "update-product-handler")
 	startTimer := time.Now()
 	defer span.Finish()
 
 	vars := mux.Vars(request)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		sendErrorResponse(writer, http.StatusBadRequest, "Update product failed: invalid product ID")
+	id, idErr := strconv.Atoi(vars["id"])
+	if idErr != nil {
+		errMsg := "Update product failed: invalid product ID"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
 
 		span.SetTag("product-updated", false)
-		span.LogKV("product-updated", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-updated", false, "error", errMsg)
 		return
 	}
 
 	var product database.Product
-	decoder := json.NewDecoder(request.Body)
-	if err := decoder.Decode(&product); err != nil {
-		sendErrorResponse(writer, http.StatusBadRequest, "Update product failed: invalid request payload")
+	unmarshErr := json.NewDecoder(request.Body).Decode(&product)
+	if unmarshErr != nil {
+		errMsg := "Update product failed: invalid request payload"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
 
 		span.SetTag("product-updated", false)
-		span.LogKV("product-updated", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-updated", false, "error", errMsg)
 		return
 	}
 	defer request.Body.Close()
@@ -152,22 +174,20 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 	logging.SugaredLog.Infof("Update product: %s", product.String())
 
 	product.ID = id
-	if err := database.UpdateProduct(s.dbConnection, &product); err != nil {
-		sendErrorResponse(writer, http.StatusInternalServerError, "Update product failed: "+err.Error())
+	updateErr := database.UpdateProduct(s.dbConnection, &product, ctx)
+	if updateErr != nil {
+		errMsg := "Update product failed: " + updateErr.Error()
+		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
 
 		span.SetTag("product-updated", false)
-		span.LogKV("product-updated", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-updated", false, "error", errMsg)
 		return
 	}
 
-	span.SetTag("updated-product-id", product.ID)
-	span.SetTag("updated-product-name", product.Name)
-	span.SetTag("updated-product-price", product.Price)
+	span.SetTag("product", product.String())
 	span.SetTag("product-updated", true)
-	span.LogKV("updated-product-id", product.ID,
-		"updated-product-name", product.Name,
-		"updated-product-price", product.Price,
-		"product-updated", true)
+	span.LogKV("product", product.String(), "product-updated", true)
 
 	sendJsonResponse(writer, http.StatusOK, product)
 
@@ -176,30 +196,33 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 }
 
 func (s *Server) deleteProduct(writer http.ResponseWriter, request *http.Request) {
-	span := opentracing.StartSpan("delete-product")
+	span, ctx := opentracing.StartSpanFromContext(context.Background(), "delete-product-handler")
 	startTimer := time.Now()
 	defer span.Finish()
 
 	vars := mux.Vars(request)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		sendErrorResponse(writer, http.StatusBadRequest, "Delete product failed: invalid Product ID")
+	id, idErr := strconv.Atoi(vars["id"])
+	if idErr != nil {
+		errMsg := "Delete product failed: invalid Product ID"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
 
 		span.SetTag("product-deleted", false)
-		span.LogKV("product-deleted", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-deleted", false, "error", errMsg)
 		return
 	}
 
 	logging.SugaredLog.Infof("Delete product by ID: %d", id)
+	span.SetTag("product-id", id)
 
-	span.SetTag("product-to-delete", id)
-
-	product := &database.Product{ID: id}
-	if err := database.DeleteProduct(s.dbConnection, product); err != nil {
-		sendErrorResponse(writer, http.StatusInternalServerError, "Delete product failed: "+err.Error())
+	deleteErr := database.DeleteProduct(s.dbConnection, id, ctx)
+	if deleteErr != nil {
+		errMsg := "Delete product failed: " + deleteErr.Error()
+		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
 
 		span.SetTag("product-deleted", false)
-		span.LogKV("product-deleted", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-deleted", false, "error", errMsg)
 		return
 	}
 

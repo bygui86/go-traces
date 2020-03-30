@@ -23,27 +23,6 @@ var (
 	restServer       *rest.Server
 )
 
-/*
-	TODO list
-		- [x] rest server with database
-		- [x] logging integration
-		- [x] monitoring integration
-		- [x] tracing integration
-		- [x] simple traces example
-		- [ ] propagated traces example
-		- [x] simple traces with logging
-		- [x] simple traces with monitoring
-		- [ ] improve monitoring packaged
-			- [ ] config (see rest)
-			- [ ] logging (see rest)
-			- [ ] new server (see rest)
-			- [ ] start go-routine (see rest)
-			- [ ] shutdown (see rest)
-		- [x] readme
-		- [x] makefile
-		- [x] dotenv
-		- [x] postman
-*/
 func main() {
 	initLogging()
 
@@ -51,7 +30,7 @@ func main() {
 
 	monitoringServer = startMonitoringServer()
 
-	tracingCloser = tracing.InitTestingTracing(serviceName)
+	tracingCloser = initTracing()
 
 	restServer = startRestServer()
 
@@ -78,6 +57,10 @@ func startMonitoringServer() *monitoring.Server {
 	logging.Log.Debug("Monitoring successfully started")
 
 	return server
+}
+
+func initTracing() io.Closer {
+	return tracing.InitTestingTracing(serviceName)
 }
 
 func startRestServer() *rest.Server {
@@ -107,14 +90,20 @@ func startSysCallChannel() {
 func shutdownAndWait(timeout int) {
 	logging.SugaredLog.Warnf("Termination signal received! Timeout %d", timeout)
 
-	restServer.Shutdown(timeout)
-
-	tracingErr := tracingCloser.Close()
-	if tracingErr != nil {
-		logging.SugaredLog.Errorf("Tracing closure failed: %s", tracingErr.Error())
+	if restServer != nil {
+		restServer.Shutdown(timeout)
 	}
 
-	monitoringServer.Shutdown()
+	if tracingCloser != nil {
+		tracingErr := tracingCloser.Close()
+		if tracingErr != nil {
+			logging.SugaredLog.Errorf("Tracing closure failed: %s", tracingErr.Error())
+		}
+	}
+
+	if monitoringServer != nil {
+		monitoringServer.Shutdown()
+	}
 
 	time.Sleep(time.Duration(timeout+1) * time.Second)
 }

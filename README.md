@@ -44,6 +44,37 @@ Root URL: `localhost:8080/`
 
 ---
 
+## Examples
+
+- [x] rest server with database
+- [x] logging adoption
+- [x] monitoring adoption
+- [x] tracing adoption
+- [x] simple traces example
+- [x] traces with logging
+- [x] traces with monitoring
+- [x] internal span propagation example
+- [ ] http client/server example
+- [ ] http client/middleware/server example
+- [ ] grpc example
+- [ ] broker example
+- [ ] `TBD` ask google example
+
+## TODO list
+
+- [ ] improve monitoring package
+    - [ ] config (see rest)
+    - [ ] logging (see rest)
+    - [ ] new server (see rest)
+    - [ ] start go-routine (see rest)
+    - [ ] shutdown (see rest)
+- [x] readme
+- [x] makefile
+- [x] dotenv
+- [x] postman
+
+---
+
 ## Links
 
 ### OpenTracing
@@ -54,10 +85,18 @@ Root URL: `localhost:8080/`
 ### Jaeger
 - https://www.jaegertracing.io/
 - https://github.com/jaegertracing/jaeger-client-go
-- https://github.com/jaegertracing/jaeger-client-go/blob/master/config/example_test.go
-- https://github.com/alextanhongpin/go-jaeger-trace
+    - https://github.com/jaegertracing/jaeger-client-go/blob/master/config/example_test.go
+    - https://github.com/jaegertracing/jaeger-client-go/blob/master/metrics/prometheus/metrics_test.go
 
-### TBD
+### Internal span propagation
+- https://docs.lightstep.com/docs/go-add-spans
+
+### HTTP tracing
+- https://docs.lightstep.com/docs/go-add-spans
+- https://github.com/alextanhongpin/go-jaeger-trace
+- https://medium.com/opentracing/tracing-http-request-latency-in-go-with-opentracing-7cc1282a100a
+
+### gRPC tracing
 - https://medium.com/swlh/distributed-tracing-for-go-microservice-with-opentracing-1fc1aec76b3e
     - https://github.com/jfeng45/grpcservice
 
