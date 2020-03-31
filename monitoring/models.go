@@ -7,13 +7,13 @@ import (
 )
 
 type Config struct {
-	RestHost        string
-	RestPort        int
-	ShutdownTimeout int
+	restHost string
+	restPort int
 }
 
 type Server struct {
-	Config     *Config
-	Router     *mux.Router
-	HTTPServer *http.Server
+	config     *Config
+	router     *mux.Router
+	httpServer *http.Server
+	running    bool
 }

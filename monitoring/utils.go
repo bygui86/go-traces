@@ -1,33 +1,38 @@
 package monitoring
 
 import (
+	"fmt"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	"github.com/bygui86/go-traces/commons"
 	"github.com/bygui86/go-traces/logging"
 )
 
-func newRouter() *mux.Router {
+func (s *Server) newRouter() {
 	logging.SugaredLog.Debugf("Setup new monitoring router")
 
-	router := mux.NewRouter().StrictSlash(true)
-	router.Handle("/metrics", promhttp.Handler())
-	return router
+	s.router = mux.NewRouter().StrictSlash(true)
+
+	s.router.Handle("/metrics", promhttp.Handler())
 }
 
-func newHTTPServer(host string, port int, router *mux.Router) *http.Server {
-	logging.SugaredLog.Debugf("Setup new monitoring HTTP server on port %d...", port)
+func (s *Server) newHTTPServer() {
+	logging.SugaredLog.Debugf("Setup new monitoring HTTP server on port %d...", s.config.restPort)
 
-	return &http.Server{
-		Addr:    host + ":" + strconv.Itoa(port),
-		Handler: router,
-		// Good practice to set timeouts to avoid Slowloris attacks.
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
+	if s.config != nil {
+		s.httpServer = &http.Server{
+			Addr:    fmt.Sprintf(commons.HttpServerHostFormat, s.config.restHost, s.config.restPort),
+			Handler: s.router,
+			// Good practice to set timeouts to avoid Slowloris attacks.
+			WriteTimeout: commons.HttpServerWriteTimeoutDefault,
+			ReadTimeout:  commons.HttpServerReadTimeoutDefault,
+			IdleTimeout:  commons.HttpServerIdelTimeoutDefault,
+		}
+		return
 	}
+
+	logging.Log.Error("Monitoring HTTP server creation failed: monitoring configurations not loaded")
 }

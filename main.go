@@ -102,7 +102,7 @@ func shutdownAndWait(timeout int) {
 	}
 
 	if monitoringServer != nil {
-		monitoringServer.Shutdown()
+		monitoringServer.Shutdown(timeout)
 	}
 
 	time.Sleep(time.Duration(timeout+1) * time.Second)

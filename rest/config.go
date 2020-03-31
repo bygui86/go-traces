@@ -28,13 +28,13 @@ const (
 func loadConfig() *config {
 	logging.Log.Debug("Load REST configurations")
 	return &config{
-		DbHost:     utils.GetStringEnv(dbHostEnvVar, dbHostEnvVarDefault),
-		DbPort:     utils.GetIntEnv(dbPortEnvVar, dbPortEnvVarDefault),
-		DbUsername: utils.GetStringEnv(dbUsernameEnvVar, dbUsernameEnvVarDefault),
-		DbPassword: utils.GetStringEnv(dbPasswordEnvVar, dbPasswordEnvVarDefault),
-		DbName:     utils.GetStringEnv(dbNameEnvVar, dbNameEnvVarDefault),
-		DbSslMode:  utils.GetStringEnv(dbSslModeEnvVar, dbSslModeEnvVarDefault),
-		RestHost:   utils.GetStringEnv(restHostEnvVar, restHostEnvVarDefault),
-		RestPort:   utils.GetIntEnv(restPortEnvVar, restPortEnvVarDefault),
+		dbHost:     utils.GetStringEnv(dbHostEnvVar, dbHostEnvVarDefault),
+		dbPort:     utils.GetIntEnv(dbPortEnvVar, dbPortEnvVarDefault),
+		dbUsername: utils.GetStringEnv(dbUsernameEnvVar, dbUsernameEnvVarDefault),
+		dbPassword: utils.GetStringEnv(dbPasswordEnvVar, dbPasswordEnvVarDefault),
+		dbName:     utils.GetStringEnv(dbNameEnvVar, dbNameEnvVarDefault),
+		dbSslMode:  utils.GetStringEnv(dbSslModeEnvVar, dbSslModeEnvVarDefault),
+		restHost:   utils.GetStringEnv(restHostEnvVar, restHostEnvVarDefault),
+		restPort:   utils.GetIntEnv(restPortEnvVar, restPortEnvVarDefault),
 	}
 }

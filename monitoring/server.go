@@ -11,37 +11,47 @@ func NewServer() *Server {
 	logging.Log.Info("Create new monitoring server")
 
 	cfg := loadConfig()
-	router := newRouter()
-	httpServer := newHTTPServer(cfg.RestHost, cfg.RestPort, router)
-	return &Server{
-		Config:     cfg,
-		Router:     router,
-		HTTPServer: httpServer,
+	server := &Server{
+		config: cfg,
 	}
+	server.newRouter()
+	server.newHTTPServer()
+	return server
 }
 
 func (s *Server) Start() {
 	logging.Log.Info("Start monitoring server")
 
-	go func() {
-		if err := s.HTTPServer.ListenAndServe(); err != nil {
-			logging.SugaredLog.Errorf("Monitoring server start failed: %s", err.Error())
-		}
-	}()
+	if s.httpServer != nil && !s.running {
+		go func() {
+			err := s.httpServer.ListenAndServe()
+			if err != nil {
+				logging.SugaredLog.Errorf("Monitoring server start failed: %s", err.Error())
+			}
+		}()
+		s.running = true
+		logging.SugaredLog.Infof("Monitoring server listen on port", s.config.restPort)
+		return
+	}
 
-	logging.SugaredLog.Debugf("Monitoring server listen on port", s.Config.RestPort)
+	logging.Log.Error("Monitoring server start failed: HTTP server not initialized or HTTP server already running")
 }
 
-func (s *Server) Shutdown() {
-	logging.Log.Warn("Shutdown monitoring server")
+func (s *Server) Shutdown(timeout int) {
+	logging.SugaredLog.Warnf("Shutdown monitoring server, timeout %d", timeout)
 
-	if s.HTTPServer != nil {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.Config.ShutdownTimeout)*time.Second)
+	if s.httpServer != nil && s.running {
+		// create a deadline to wait for.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 		defer cancel()
 		// does not block if no connections, otherwise wait until the timeout deadline
-		err := s.HTTPServer.Shutdown(ctx)
+		err := s.httpServer.Shutdown(ctx)
 		if err != nil {
 			logging.SugaredLog.Errorf("Monitoring server shutdown failed: %s", err.Error())
 		}
+		s.running = false
+		return
 	}
+
+	logging.Log.Error("Monitoring server shutdown failed: HTTP server not initialized or HTTP server not running")
 }

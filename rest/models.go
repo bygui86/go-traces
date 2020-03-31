@@ -8,19 +8,19 @@ import (
 )
 
 type config struct {
-	DbHost     string
-	DbPort     int
-	DbUsername string
-	DbPassword string
-	DbName     string
-	DbSslMode  string
-	RestHost   string
-	RestPort   int
+	dbHost     string
+	dbPort     int
+	dbUsername string
+	dbPassword string
+	dbName     string
+	dbSslMode  string
+	restHost   string
+	restPort   int
 }
 
 type Server struct {
 	config       *config
-	Router       *mux.Router
+	router       *mux.Router
 	httpServer   *http.Server
 	dbConnection *sql.DB
 	running      bool

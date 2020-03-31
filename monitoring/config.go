@@ -6,20 +6,17 @@ import (
 )
 
 const (
-	monHostEnvVar            = "MONITOR_HOST"
-	monPortEnvVar            = "MONITOR_PORT"
-	monShutdownTimeoutEnvVar = "MONITOR_SHUTDOWN_TIMEOUT"
+	monitorHostEnvVar = "MONITOR_HOST"
+	monitorPortEnvVar = "MONITOR_PORT"
 
-	monHostDefault     = "localhost"
-	monPortDefault     = 9090
-	monShutdownTimeout = 3
+	monitorHostDefault = "localhost"
+	monitorPortDefault = 9090
 )
 
 func loadConfig() *Config {
-	logging.SugaredLog.Debug("Load monitoring configurations")
+	logging.Log.Debug("Load monitoring configurations")
 	return &Config{
-		RestHost:        utils.GetStringEnv(monHostEnvVar, monHostDefault),
-		RestPort:        utils.GetIntEnv(monPortEnvVar, monPortDefault),
-		ShutdownTimeout: utils.GetIntEnv(monShutdownTimeoutEnvVar, monShutdownTimeout),
+		restHost: utils.GetStringEnv(monitorHostEnvVar, monitorHostDefault),
+		restPort: utils.GetIntEnv(monitorPortEnvVar, monitorPortDefault),
 	}
 }

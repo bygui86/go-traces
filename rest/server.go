@@ -15,11 +15,6 @@ import (
 const (
 	dbConnectionStringFormat = "host=%s port=%d user=%s password=%s dbname=%s sslmode=%s"
 	dbDriverName             = "postgres"
-
-	httpServerHostFormat          = "%s:%d"
-	httpServerWriteTimeoutDefault = time.Second * 15
-	httpServerReadTimeoutDefault  = time.Second * 15
-	httpServerIdelTimeoutDefault  = time.Second * 60
 )
 
 func NewServer() (*Server, error) {
@@ -30,9 +25,9 @@ func NewServer() (*Server, error) {
 	dbConnection, dbErr := sql.Open(
 		dbDriverName,
 		fmt.Sprintf(dbConnectionStringFormat,
-			cfg.DbHost, cfg.DbPort,
-			cfg.DbUsername, cfg.DbPassword, cfg.DbName,
-			cfg.DbSslMode,
+			cfg.dbHost, cfg.dbPort,
+			cfg.dbUsername, cfg.dbPassword, cfg.dbName,
+			cfg.dbSslMode,
 		),
 	)
 	if dbErr != nil {
@@ -61,11 +56,11 @@ func (s *Server) Start() {
 		go func() {
 			err := s.httpServer.ListenAndServe()
 			if err != nil {
-				logging.SugaredLog.Errorf("Error starting REST server: %s", err.Error())
+				logging.SugaredLog.Errorf("REST server start failed: %s", err.Error())
 			}
 		}()
 		s.running = true
-		logging.SugaredLog.Infof("REST server listening on port %d", s.config.RestPort)
+		logging.SugaredLog.Infof("REST server listening on port %d", s.config.restPort)
 		return
 	}
 

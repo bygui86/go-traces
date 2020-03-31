@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/bygui86/go-traces/commons"
 	"github.com/bygui86/go-traces/logging"
 )
 
@@ -15,31 +16,31 @@ import (
 func (s *Server) setupRouter() {
 	logging.Log.Debug("Create new router")
 
-	s.Router = mux.NewRouter().StrictSlash(true)
+	s.router = mux.NewRouter().StrictSlash(true)
 
-	s.Router.HandleFunc("/products", s.getProducts).Methods(http.MethodGet)
-	s.Router.HandleFunc("/products/{id:[0-9]+}", s.getProduct).Methods(http.MethodGet)
-	s.Router.HandleFunc("/products", s.createProduct).Methods(http.MethodPost)
-	s.Router.HandleFunc("/products/{id:[0-9]+}", s.updateProduct).Methods(http.MethodPut)
-	s.Router.HandleFunc("/products/{id:[0-9]+}", s.deleteProduct).Methods(http.MethodDelete)
+	s.router.HandleFunc("/products", s.getProducts).Methods(http.MethodGet)
+	s.router.HandleFunc("/products/{id:[0-9]+}", s.getProduct).Methods(http.MethodGet)
+	s.router.HandleFunc("/products", s.createProduct).Methods(http.MethodPost)
+	s.router.HandleFunc("/products/{id:[0-9]+}", s.updateProduct).Methods(http.MethodPut)
+	s.router.HandleFunc("/products/{id:[0-9]+}", s.deleteProduct).Methods(http.MethodDelete)
 }
 
 func (s *Server) setupHTTPServer() {
-	logging.SugaredLog.Debugf("Create new HTTP server on port %d", s.config.RestPort)
+	logging.SugaredLog.Debugf("Create new HTTP server on port %d", s.config.restPort)
 
 	if s.config != nil {
 		s.httpServer = &http.Server{
-			Addr:    fmt.Sprintf(httpServerHostFormat, s.config.RestHost, s.config.RestPort),
-			Handler: s.Router,
+			Addr:    fmt.Sprintf(commons.HttpServerHostFormat, s.config.restHost, s.config.restPort),
+			Handler: s.router,
 			// Good practice to set timeouts to avoid Slowloris attacks.
-			WriteTimeout: httpServerWriteTimeoutDefault,
-			ReadTimeout:  httpServerReadTimeoutDefault,
-			IdleTimeout:  httpServerIdelTimeoutDefault,
+			WriteTimeout: commons.HttpServerWriteTimeoutDefault,
+			ReadTimeout:  commons.HttpServerReadTimeoutDefault,
+			IdleTimeout:  commons.HttpServerIdelTimeoutDefault,
 		}
 		return
 	}
 
-	logging.Log.Error("HTTP server creation failed: REST server configurations not initialized")
+	logging.Log.Error("HTTP server creation failed: REST server configurations not loaded")
 }
 
 // HANDLERS

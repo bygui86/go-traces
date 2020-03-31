@@ -60,19 +60,6 @@ Root URL: `localhost:8080/`
 - [ ] broker example
 - [ ] `TBD` ask google example
 
-## TODO list
-
-- [ ] improve monitoring package
-    - [ ] config (see rest)
-    - [ ] logging (see rest)
-    - [ ] new server (see rest)
-    - [ ] start go-routine (see rest)
-    - [ ] shutdown (see rest)
-- [x] readme
-- [x] makefile
-- [x] dotenv
-- [x] postman
-
 ---
 
 ## Links
