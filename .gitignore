@@ -56,4 +56,4 @@ go-kubernetes-istio
 *.out
 
 ########### Project specific
-go-traces
+# see single folders

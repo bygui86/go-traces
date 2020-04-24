@@ -10,29 +10,17 @@
 
 # ACTIONS
 
-run-jaeger :		## Run Jaeger in a container
-	docker run -d --name jaeger \
-		-p 5775:5775/udp \
-		-p 5778:5578 \
-		-p 6831:6831/udp \
-		-p 6832:6832/udp \
-		-p 9411:9411 \
-		-p 14268:14268 \
-		-p 14269:14269 \
-		-p 16686:16686 \
-		jaegertracing/all-in-one
+build :		## Build application
+	export GO111MODULE=on && \
+	go build
 
-run-postgres :		## Run PostgreSQL in a container
-	cd http-server/ && \
-	make run-postgres
+run :		## Run application from source code
+	export GO111MODULE=on && \
+	godotenv -f local.env go run main.go
 
-run-http-server :		## Run HTTP server application
-	cd http-server/ && \
-	make run
-
-run-http-client :		## Run HTTP client application
-	cd http-client/ && \
-	make run
+run-binary : build		## Run application from binary
+	source local-binary.env && \
+	./go-traces
 
 ## helpers
 
