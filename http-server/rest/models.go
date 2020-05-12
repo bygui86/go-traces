@@ -8,11 +8,11 @@ import (
 )
 
 type Server struct {
-	config       *config
-	router       *mux.Router
-	httpServer   *http.Server
-	dbConnection *sql.DB
-	running      bool
+	config     *config
+	router     *mux.Router
+	httpServer *http.Server
+	db         *sql.DB
+	running    bool
 }
 
 type config struct {

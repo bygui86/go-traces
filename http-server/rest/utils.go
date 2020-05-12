@@ -12,6 +12,10 @@ import (
 )
 
 const (
+	// urls
+	rootProductsEndpoint = "/products"
+	productsIdEndpoint   = rootProductsEndpoint + "/{id:[0-9]+}"
+
 	contentTypeHeaderKey       = "Content-Type"
 	contentTypeApplicationJson = "application/json"
 )
@@ -23,11 +27,11 @@ func (s *Server) setupRouter() {
 
 	s.router = mux.NewRouter().StrictSlash(true)
 
-	s.router.HandleFunc("/products", s.getProducts).Methods(http.MethodGet)
-	s.router.HandleFunc("/products/{id:[0-9]+}", s.getProduct).Methods(http.MethodGet)
-	s.router.HandleFunc("/products", s.createProduct).Methods(http.MethodPost)
-	s.router.HandleFunc("/products/{id:[0-9]+}", s.updateProduct).Methods(http.MethodPut)
-	s.router.HandleFunc("/products/{id:[0-9]+}", s.deleteProduct).Methods(http.MethodDelete)
+	s.router.HandleFunc(rootProductsEndpoint, s.getProducts).Methods(http.MethodGet)
+	s.router.HandleFunc(productsIdEndpoint, s.getProduct).Methods(http.MethodGet)
+	s.router.HandleFunc(rootProductsEndpoint, s.createProduct).Methods(http.MethodPost)
+	s.router.HandleFunc(productsIdEndpoint, s.updateProduct).Methods(http.MethodPut)
+	s.router.HandleFunc(productsIdEndpoint, s.deleteProduct).Methods(http.MethodDelete)
 }
 
 func (s *Server) setupHTTPServer() {

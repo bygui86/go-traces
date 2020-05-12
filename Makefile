@@ -22,6 +22,9 @@ run-jaeger :		## Run Jaeger in a container
 		-p 16686:16686 \
 		jaegertracing/all-in-one
 
+open-jaeger-ui :		## Open Jaeger UI in the browser
+	open http://localhost:16686
+
 run-postgres :		## Run PostgreSQL in a container
 	cd http-server/ && \
 	make run-postgres

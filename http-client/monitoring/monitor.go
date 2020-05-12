@@ -30,7 +30,7 @@ func (s *Server) Start() {
 			}
 		}()
 		s.running = true
-		logging.SugaredLog.Infof("Monitoring server listen on port", s.config.restPort)
+		logging.SugaredLog.Infof("Monitoring server listen on port %d", s.config.restPort)
 		return
 	}
 

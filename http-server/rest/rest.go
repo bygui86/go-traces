@@ -2,24 +2,34 @@ package rest
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
-	"github.com/bygui86/go-traces/http-client/logging"
+	"github.com/bygui86/go-traces/http-server/database"
+	"github.com/bygui86/go-traces/http-server/logging"
 )
 
-func NewServer() (*Server, error) {
+func New(enableTracing bool) (*Server, error) {
 	logging.Log.Info("Create new REST server")
 
 	cfg := loadConfig()
 
-	server := &Server{
-		config: cfg,
+	var db *sql.DB
+	var dbErr error
+	if enableTracing {
+		db, dbErr = database.NewWithTracing()
+	} else {
+		db, dbErr = database.New()
+	}
+	if dbErr != nil {
+		return nil, dbErr
 	}
 
-	err := server.setupRestClient()
-	if err != nil {
-		return nil, err
+	server := &Server{
+		config: cfg,
+		db:     db,
 	}
+
 	server.setupRouter()
 	server.setupHTTPServer()
 	return server, nil

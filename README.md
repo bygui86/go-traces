@@ -35,6 +35,10 @@ make run-jaeger
 
 `TODO`
 
+### Broker applications
+
+`TODO`
+
 ---
 
 ## Examples
@@ -48,11 +52,11 @@ make run-jaeger
 - [x] traces with monitoring
 - [x] internal span propagation example
 - [x] external span propagation example
-    - [x] db tracer example
+    - [ ] db tracer example - `TESTING`
     - [ ] http client/server example - `WIP`
-    - [ ] http client/middleware/server example
     - [ ] grpc example
     - [ ] broker example
+    - [ ] `TBD` http client/middleware/server example
     - [ ] `TBD` ask google example
 
 ---
@@ -64,6 +68,11 @@ make run-jaeger
 - https://github.com/opentracing/opentracing-go
 - https://github.com/opentracing-contrib/examples/
 
+### OpenCensus
+- https://github.com/opencensus-integrations/ocsql
+- https://opencensus.io/stats/
+- https://opencensus.io/exporters/supported-exporters/go/prometheus/
+
 ### Jaeger
 - https://www.jaegertracing.io/
 - https://github.com/jaegertracing/jaeger-client-go
@@ -72,9 +81,6 @@ make run-jaeger
 
 ### Internal propagation
 - https://docs.lightstep.com/docs/go-add-spans
-
-### External propagation
-- https://medium.com/swlh/distributed-tracing-for-go-microservice-with-opentracing-1fc1aec76b3e
 
 #### DB
 - https://medium.com/@bas.vanbeek/opencensus-and-go-database-sql-322a26be5cc5
@@ -90,6 +96,7 @@ make run-jaeger
 - https://medium.com/@marcus.olsson/adding-context-and-options-to-your-go-client-package-244c4ad1231b
 
 #### gRPC tracing
+- https://medium.com/swlh/distributed-tracing-for-go-microservice-with-opentracing-1fc1aec76b3e
 - https://github.com/jfeng45/grpcservice
 
 ### OpenTelemetry

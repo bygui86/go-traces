@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/gorilla/mux v1.7.4
+	github.com/opentracing-contrib/go-stdlib v0.0.0-20190519235532-cf7a6c988dc9
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/prometheus/client_golang v1.5.1
 	github.com/uber/jaeger-client-go v2.22.1+incompatible

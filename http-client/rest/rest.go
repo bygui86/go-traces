@@ -2,48 +2,24 @@ package rest
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"time"
 
-	_ "github.com/lib/pq"
-
-	"github.com/bygui86/go-traces/http-server/database"
-	"github.com/bygui86/go-traces/http-server/logging"
+	"github.com/bygui86/go-traces/http-client/logging"
 )
 
-const (
-	dbConnectionStringFormat = "host=%s port=%d user=%s password=%s dbname=%s sslmode=%s"
-	dbDriverName             = "postgres"
-)
-
-func NewServer() (*Server, error) {
+func New() (*Server, error) {
 	logging.Log.Info("Create new REST server")
 
 	cfg := loadConfig()
 
-	dbConnection, dbErr := sql.Open(
-		dbDriverName,
-		fmt.Sprintf(dbConnectionStringFormat,
-			cfg.dbHost, cfg.dbPort,
-			cfg.dbUsername, cfg.dbPassword, cfg.dbName,
-			cfg.dbSslMode,
-		),
-	)
-	if dbErr != nil {
-		return nil, dbErr
-	}
-
-	_, tableErr := dbConnection.Exec(database.CreateTableQuery)
-	if tableErr != nil {
-		return nil, tableErr
-	}
-
 	server := &Server{
-		config:       cfg,
-		dbConnection: dbConnection,
+		config: cfg,
 	}
 
+	err := server.setupRestClient()
+	if err != nil {
+		return nil, err
+	}
 	server.setupRouter()
 	server.setupHTTPServer()
 	return server, nil

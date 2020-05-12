@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/gorilla/mux"
-	// "github.com/opentracing-contrib/go-stdlib/nethttp"
 
 	"github.com/bygui86/go-traces/http-client/commons"
 	"github.com/bygui86/go-traces/http-client/logging"
@@ -15,8 +15,9 @@ import (
 
 const (
 	// urls
-	rootProductsEndpoint = "/products"
-	productsIdEndpoint   = "/" + rootProductsEndpoint + "/{id:[0-9]+}"
+	rootProductsEndpoint     = "/products"
+	productsIdEndpoint       = rootProductsEndpoint + "/{id:[0-9]+}" // used by mux router
+	productsIdServerEndpoint = rootProductsEndpoint + "/%d"          // used to reach http-server
 
 	// headers
 	// keys
@@ -39,24 +40,23 @@ func (s *Server) setupRestClient() error {
 		return urlErr
 	}
 
-	s.restClient = &http.Client{}
-	// "github.com/opentracing-contrib/go-stdlib/nethttp"
-	// s.restClient = &http.Client{Transport: &nethttp.Transport{}}
+	s.restClient = &http.Client{
+		Timeout: 3 * time.Second,
+	}
 
 	return nil
 }
 
-// TODO
 func (s *Server) setupRouter() {
 	logging.Log.Debug("Create new router")
 
 	s.router = mux.NewRouter().StrictSlash(true)
 
-	// s.router.HandleFunc(rootProductsEndpoint, s.getProducts).Methods(http.MethodGet)
-	// s.router.HandleFunc(productsIdEndpoint, s.getProduct).Methods(http.MethodGet)
-	// s.router.HandleFunc(rootProductsEndpoint, s.createProduct).Methods(http.MethodPost)
-	// s.router.HandleFunc(productsIdEndpoint, s.updateProduct).Methods(http.MethodPut)
-	// s.router.HandleFunc(productsIdEndpoint, s.deleteProduct).Methods(http.MethodDelete)
+	s.router.HandleFunc(rootProductsEndpoint, s.getProducts).Methods(http.MethodGet)
+	s.router.HandleFunc(productsIdEndpoint, s.getProduct).Methods(http.MethodGet)
+	s.router.HandleFunc(rootProductsEndpoint, s.createProduct).Methods(http.MethodPost)
+	s.router.HandleFunc(productsIdEndpoint, s.updateProduct).Methods(http.MethodPut)
+	s.router.HandleFunc(productsIdEndpoint, s.deleteProduct).Methods(http.MethodDelete)
 }
 
 func (s *Server) setupHTTPServer() {

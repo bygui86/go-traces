@@ -2,6 +2,15 @@ package database
 
 import "fmt"
 
+type config struct {
+	dbHost     string
+	dbPort     int
+	dbUsername string
+	dbPassword string
+	dbName     string
+	dbSslMode  string
+}
+
 type Product struct {
 	ID    int     `json:"id"`
 	Name  string  `json:"name"`

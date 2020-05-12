@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	serviceName = "go-traces_http-server"
+	serviceName = "http-server"
 )
 
 var (
@@ -26,7 +26,7 @@ var (
 func main() {
 	initLogging()
 
-	logging.Log.Info("Start go-traces")
+	logging.Log.Info("Start http-server")
 
 	monitoringServer = startMonitoringServer()
 
@@ -34,7 +34,7 @@ func main() {
 
 	restServer = startRestServer()
 
-	logging.Log.Info("go-traces up&running")
+	logging.Log.Info("http-server up&running")
 
 	startSysCallChannel()
 
@@ -66,7 +66,7 @@ func initTracing() io.Closer {
 func startRestServer() *rest.Server {
 	logging.Log.Debug("Start REST server")
 
-	server, err := rest.NewServer()
+	server, err := rest.New(true)
 	if err != nil {
 		logging.SugaredLog.Errorf("REST server creation failed: %s", err.Error())
 		os.Exit(501)
