@@ -1,0 +1,112 @@
+package main
+
+import (
+	"io"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/bygui86/go-traces/kafka-consumer/consumer"
+	"github.com/bygui86/go-traces/kafka-consumer/logging"
+	"github.com/bygui86/go-traces/kafka-consumer/monitoring"
+	"github.com/bygui86/go-traces/kafka-consumer/tracing"
+)
+
+const (
+	serviceName = "kafka-consumer"
+)
+
+var (
+	monitoringServer *monitoring.Server
+	tracingCloser    io.Closer
+	kafkaConsumer    *consumer.KafkaConsumer
+)
+
+func main() {
+	initLogging()
+
+	logging.SugaredLog.Infof("Start %s", serviceName)
+
+	monitoringServer = startMonitoringServer()
+
+	tracingCloser = initTracing()
+
+	kafkaConsumer = startConsumer()
+
+	logging.SugaredLog.Infof("%s up and running", serviceName)
+
+	startSysCallChannel()
+
+	shutdownAndWait(1)
+}
+
+func initLogging() {
+	err := logging.InitGlobalLogger()
+	if err != nil {
+		logging.SugaredLog.Errorf("Logging setup failed: %s", err.Error())
+		os.Exit(501)
+	}
+}
+
+func startMonitoringServer() *monitoring.Server {
+	logging.Log.Debug("Start monitoring")
+	server := monitoring.New()
+	logging.Log.Debug("Monitoring server successfully created")
+
+	server.Start()
+	logging.Log.Debug("Monitoring successfully started")
+
+	return server
+}
+
+func initTracing() io.Closer {
+	logging.Log.Debug("Init tracing")
+	return tracing.InitTestingTracing(serviceName)
+}
+
+func startConsumer() *consumer.KafkaConsumer {
+	logging.Log.Debug("Start consumer")
+	kConsumer, newErr := consumer.New(serviceName)
+	if newErr != nil {
+		logging.SugaredLog.Errorf("Consumer setup failed: %s", newErr.Error())
+		os.Exit(501)
+	}
+	logging.Log.Debug("Consumer successfully created")
+
+	startErr := kConsumer.Start()
+	if startErr != nil {
+		logging.SugaredLog.Errorf("Consumer start failed: %s", startErr.Error())
+		os.Exit(502)
+	}
+	logging.Log.Debug("Consumer successfully started")
+
+	return kConsumer
+}
+
+func startSysCallChannel() {
+	syscallCh := make(chan os.Signal)
+	signal.Notify(syscallCh, syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+	<-syscallCh
+}
+
+func shutdownAndWait(timeout int) {
+	logging.SugaredLog.Warnf("Termination signal received! Timeout %d", timeout)
+
+	if kafkaConsumer != nil {
+		kafkaConsumer.Shutdown(timeout)
+	}
+
+	if tracingCloser != nil {
+		tracingErr := tracingCloser.Close()
+		if tracingErr != nil {
+			logging.SugaredLog.Errorf("Tracing closure failed: %s", tracingErr.Error())
+		}
+	}
+
+	if monitoringServer != nil {
+		monitoringServer.Shutdown(timeout)
+	}
+
+	time.Sleep(time.Duration(timeout+1) * time.Second)
+}
