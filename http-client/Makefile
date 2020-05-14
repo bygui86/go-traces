@@ -3,6 +3,10 @@
 # -
 
 
+# ENVIRONMENT VARIABLES
+export GO111MODULE = on
+
+
 # CONFIG
 .PHONY: help print-variables
 .DEFAULT_GOAL := help
@@ -10,17 +14,20 @@
 
 # ACTIONS
 
+## infra
+
+# -
+
+## application
+
 build :		## Build application
-	export GO111MODULE=on && \
 	go build
 
 run :		## Run application from source code
-	export GO111MODULE=on && \
 	godotenv -f local.env go run main.go
 
 run-binary : build		## Run application from binary
-	source local-binary.env && \
-	./go-traces
+	source local-binary.env && ./http-client
 
 ## helpers
 

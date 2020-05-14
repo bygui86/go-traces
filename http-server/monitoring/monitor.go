@@ -7,7 +7,7 @@ import (
 	"github.com/bygui86/go-traces/http-server/logging"
 )
 
-func NewServer() *Server {
+func New() *Server {
 	logging.Log.Info("Create new monitoring server")
 
 	cfg := loadConfig()

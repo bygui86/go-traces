@@ -3,6 +3,10 @@
 # -
 
 
+# ENVIRONMENT VARIABLES
+export GO111MODULE = on
+
+
 # CONFIG
 .PHONY: help print-variables
 .DEFAULT_GOAL := help
@@ -10,23 +14,27 @@
 
 # ACTIONS
 
-build :		## Build application
-	export GO111MODULE=on && \
-	go build
-
-run :		## Run application from source code
-	export GO111MODULE=on && \
-	godotenv -f local.env go run main.go
-
-run-binary : build		## Run application from binary
-	source local-binary.env && \
-	./go-traces
+## infra
 
 run-postgres :		## Run PostgreSQL in a container
-	docker run -d --name postgres \
+	docker run -d --rm --name postgres \
 		-e POSTGRES_PASSWORD=supersecret \
 		-p 5432:5432 \
 		postgres
+
+stop-postgres :		## Stop PostgreSQL container
+	docker stop postgres
+
+## application
+
+build :		## Build application
+	go build
+
+run :		## Run application from source code
+	godotenv -f local.env go run main.go
+
+run-binary : build		## Run application from binary
+	source local-binary.env && ./http-server
 
 ## helpers
 

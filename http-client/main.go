@@ -26,7 +26,7 @@ var (
 func main() {
 	initLogging()
 
-	logging.Log.Info("Start http-client")
+	logging.SugaredLog.Infof("Start %s", serviceName)
 
 	monitoringServer = startMonitoringServer()
 
@@ -34,11 +34,11 @@ func main() {
 
 	restServer = startRestServer()
 
-	logging.Log.Info("http-client up&running")
+	logging.SugaredLog.Infof("%s up and running", serviceName)
 
 	startSysCallChannel()
 
-	shutdownAndWait(3)
+	shutdownAndWait(1)
 }
 
 func initLogging() {
@@ -50,6 +50,7 @@ func initLogging() {
 }
 
 func startMonitoringServer() *monitoring.Server {
+	logging.Log.Debug("Start monitoring")
 	server := monitoring.NewServer()
 	logging.Log.Debug("Monitoring server successfully created")
 
@@ -60,6 +61,7 @@ func startMonitoringServer() *monitoring.Server {
 }
 
 func initTracing() io.Closer {
+	logging.Log.Debug("Init tracing")
 	return tracing.InitTestingTracing(serviceName)
 }
 

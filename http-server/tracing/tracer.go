@@ -48,7 +48,7 @@ func InitSample(serviceName string) io.Closer {
 	stdLogger := jaegerlog.StdLogger
 	nullMetricsFactory := metrics.NullFactory
 
-	// Initialize tracer with a logger and a metrics factory
+	// Initialize tracing with a logger and a metrics factory
 	closer, tracerErr := cfg.InitGlobalTracer(
 		serviceName,
 		jaegercfg.Logger(stdLogger),
@@ -59,7 +59,7 @@ func InitSample(serviceName string) io.Closer {
 		os.Exit(501)
 	}
 
-	logging.SugaredLog.Debugf("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	logging.SugaredLog.Debugf("Global tracing registered: %t", opentracing.IsGlobalTracerRegistered())
 
 	return closer
 }
@@ -78,7 +78,7 @@ func InitTestingTracing(serviceName string) io.Closer {
 		},
 	}
 
-	// Initialize tracer with a logger and a metrics factory
+	// Initialize tracing with a logger and a metrics factory
 	closer, tracerErr := cfg.InitGlobalTracer(
 		serviceName,
 		jaegercfg.Logger(jaegerlogzap.NewLogger(logging.Log)),
@@ -89,7 +89,7 @@ func InitTestingTracing(serviceName string) io.Closer {
 		os.Exit(501)
 	}
 
-	logging.SugaredLog.Debugf("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	logging.SugaredLog.Debugf("Global tracing registered: %t", opentracing.IsGlobalTracerRegistered())
 
 	return closer
 }
@@ -98,7 +98,7 @@ func InitProductionTracing(serviceName string) io.Closer {
 	// Recommended configuration for production.
 	cfg := jaegercfg.Configuration{}
 
-	// Initialize tracer with a logger and a metrics factory
+	// Initialize tracing with a logger and a metrics factory
 	closer, tracerErr := cfg.InitGlobalTracer(
 		serviceName,
 		jaegercfg.Logger(jaegerlogzap.NewLogger(logging.Log)),
@@ -109,7 +109,7 @@ func InitProductionTracing(serviceName string) io.Closer {
 		os.Exit(501)
 	}
 
-	logging.SugaredLog.Debugf("Global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	logging.SugaredLog.Debugf("Global tracing registered: %t", opentracing.IsGlobalTracerRegistered())
 
 	return closer
 }
