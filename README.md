@@ -51,33 +51,46 @@ make run-jaeger
 - [x] traces with logging
 - [x] traces with monitoring
 - [x] internal span propagation example
-- [x] external span propagation example
-    - [ ] db tracer example - `TESTING`
-    - [ ] http client/server example - `WIP`
+- [ ] external span propagation example
+    - [ ] db tracer example - `NOT WORKING`
+    - [x] http client/server example
+    - [ ] kafka example - `WIP`
+    - [ ] kubemq example
     - [ ] grpc example
-    - [ ] broker example
     - [ ] `TBD` http client/middleware/server example
     - [ ] `TBD` ask google example
+- [x] send spans to jaeger
+- [ ] send spans to zipkin
 
 ---
 
 ## Links
-
-### OpenTracing
-- https://opentracing.io/
-- https://github.com/opentracing/opentracing-go
-- https://github.com/opentracing-contrib/examples/
 
 ### OpenCensus
 - https://github.com/opencensus-integrations/ocsql
 - https://opencensus.io/stats/
 - https://opencensus.io/exporters/supported-exporters/go/prometheus/
 
+### OpenTracing
+- https://opentracing.io/
+- https://opentracing.io/guides/golang/
+- https://github.com/opentracing/opentracing-go
+- https://github.com/opentracing-contrib/examples/
+- https://www.reddit.com/r/golang/comments/cyahcp/help_wanted_with_opentracing_inject_extract_using/
+
+### OpenTelemetry
+- https://opentelemetry.io/
+- https://github.com/open-telemetry/opentelemetry-go
+- https://github.com/open-telemetry/opentelemetry-collector
+
 ### Jaeger
 - https://www.jaegertracing.io/
 - https://github.com/jaegertracing/jaeger-client-go
     - https://github.com/jaegertracing/jaeger-client-go/blob/master/config/example_test.go
     - https://github.com/jaegertracing/jaeger-client-go/blob/master/metrics/prometheus/metrics_test.go
+
+### Zipkin
+- https://github.com/openzipkin/zipkin-go
 
 ### Internal propagation
 - https://docs.lightstep.com/docs/go-add-spans
@@ -98,11 +111,14 @@ make run-jaeger
 #### gRPC tracing
 - https://medium.com/swlh/distributed-tracing-for-go-microservice-with-opentracing-1fc1aec76b3e
 - https://github.com/jfeng45/grpcservice
+- https://github.com/opentracing-contrib/go-grpc
 
-### OpenTelemetry
-- https://opentelemetry.io/
-- https://github.com/open-telemetry/opentelemetry-go
-- https://github.com/open-telemetry/opentelemetry-collector
+#### Broker tracing
+##### Kafka
+- https://github.com/confluentinc/confluent-kafka-go
+- https://github.com/jaegertracing/jaeger/blob/master/pkg/kafka/producer/config.go (shopify/sarama kafka library)
+##### KubeMQ
+`TO BE SEARCHED`
 
 ### Kubernetes
 - https://medium.com/opentracing/opentracing-on-kubernetes-get-yer-tracing-for-free-7a69cca03c8a
