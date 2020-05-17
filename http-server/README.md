@@ -3,13 +3,7 @@
 
 ## Endpoints
 
-### Monitoring
-
-URL: `localhost:9090/metrics`
-
-### Products
-
-Root URL: `localhost:8080/`
+Root URL: `localhost:8180/`
 
 | Method | URL | Description
 | --- | --- | --- |
@@ -18,19 +12,3 @@ Root URL: `localhost:8080/`
 | POST | /products | Create a new product |
 | PUT | /products/{id} | Update an existing product retrieved by ID |
 | DELETE | /products/{id} | Delete a product by ID |
-
----
-
-## Run
-
-1. start PostgreSQL
-    ```shell script
-    make run-postgres
-    ```
-
-2. start server
-    ```shell script
-    make run
-    ```
-
-3. play a bit with [Postman](https://www.postman.com/) loading the [prepared collection](postman/postman_collection.json)

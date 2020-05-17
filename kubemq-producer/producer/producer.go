@@ -15,8 +15,9 @@ func New(ctx context.Context, producerName string) (*KubemqProducer, error) {
 	cfg := loadConfig()
 
 	client, err := kubemq.NewClient(ctx,
-		kubemq.WithAddress(cfg.kubemqHost, cfg.kubemqPort),
 		kubemq.WithClientId(producerName),
+		kubemq.WithAddress(cfg.kubemqHost, cfg.kubemqPort),
+		kubemq.WithDefaultChannel(cfg.kubemqChannel),
 		kubemq.WithTransportType(kubemq.TransportTypeGRPC))
 	if err != nil {
 		return nil, err

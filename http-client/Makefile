@@ -23,10 +23,10 @@ export GO111MODULE = on
 build :		## Build application
 	go build
 
-run :		## Run application from source code
+start :		## Run application from source code
 	godotenv -f local.env go run main.go
 
-run-binary : build		## Run application from binary
+start-binary : build		## Run application from binary
 	source local-binary.env && ./http-client
 
 ## helpers

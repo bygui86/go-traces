@@ -14,7 +14,7 @@
 
 ### jaeger
 
-run-jaeger :		## Run Jaeger (all-in-one) in a container
+start-jaeger :		## Run Jaeger (all-in-one) in a container
 	docker run -d --rm --name jaeger \
 		-p 5775:5775/udp \
 		-p 5778:5578 \
@@ -34,28 +34,37 @@ open-jaeger-ui :		## Open Jaeger UI in browser
 
 ### zipkin
 
-# TODO
+start-zipkin :		## Run Zipkin in a container
+	docker run -d --rm --name zipkin \
+		-p 9411:9411 \
+		openzipkin/zipkin
+
+stop-zipkin :		## Stop Zipkin in container
+	docker stop zipkin
+
+open-zipkin-ui :		## Open Zipkin UI in browser
+	open http://localhost:9411
 
 ### postgres
 
-run-postgres :		## Run PostgreSQL in a container
-	cd http-server/ && make run-postgres
+start-postgres :		## Run PostgreSQL in a container
+	cd http-server/ && make start-postgres
 
 stop-postgres :		## Stop PostgreSQL in container
 	cd http-server/ && make stop-postgres
 
 ### kafka
 
-run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
-	cd kafka-producer/ && make run-kafka
+start-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
+	cd kafka-producer/ && make start-kafka
 
 stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 	cd kafka-producer/ && make stop-kafka
 
 ### kubemq
 
-run-kubemq :		## Run Minikube and deploy KubeMQ
-	cd kubemq-producer/ && make run-kubemq
+start-kubemq :		## Run Minikube and deploy KubeMQ
+	cd kubemq-producer/ && make start-kubemq
 
 stop-kubemq :		## Stop Minikube and KubeMQ
 	cd kubemq-producer/ && make stop-kubemq
@@ -70,26 +79,26 @@ open-kubemq-ui :		## Open KubeMQ UI in browser
 
 ### http
 
-run-http-server :		## Run HTTP server application
+start-http-server :		## Run HTTP server application
 	cd http-server/ && make run
 
-run-http-client :		## Run HTTP client application
+start-http-client :		## Run HTTP client application
 	cd http-client/ && make run
 
 ### kafka
 
-run-kafka-consumer :		## Run Kafka consumer application
+start-kafka-consumer :		## Run Kafka consumer application
 	cd kafka-consumer/ && make run
 
-run-kafka-producer :		## Run Kafka producer application
+start-kafka-producer :		## Run Kafka producer application
 	cd kafka-producer/ && make run
 
 ### kubemq
 
-run-kubemq-consumer :		## Run KubeMQ consumer application
+start-kubemq-consumer :		## Run KubeMQ consumer application
 	cd kubemq-consumer/ && make run
 
-run-kubemq-producer :		## Run KubeMQ producer application
+start-kubemq-producer :		## Run KubeMQ producer application
 	cd kubemq-producer/ && make run
 
 ### grpc

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	// "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go"
 
 	"github.com/bygui86/go-traces/kubemq-producer/logging"
 )
@@ -21,44 +21,46 @@ func (p *KubemqProducer) startProducer() {
 	for {
 		select {
 		case <-p.ticker.C:
-			// span := opentracing.StartSpan(p.name)
+			span := opentracing.StartSpan(p.name)
 
-			id := fmt.Sprintf("%s.%d", p.name, counter)
-			msg := getMessage(100)
+			tags := make(map[string]string, 2)
+			tags["sample"] = "sample-value"
 
-			// carrier := tracing.KafkaHeadersCarrier([]kafka.Header{
-			// 	{"example", []byte("example-value")},
-			// })
-			// tracingErr := tracing.Inject(span, &carrier)
-			// if tracingErr != nil {
-			// 	logging.SugaredLog.Errorf("Producer failed to inject tracing span: %s", tracingErr.Error())
-			// 	continue
-			// }
+			traceErr := opentracing.GlobalTracer().Inject(
+				span.Context(),
+				opentracing.TextMap,
+				opentracing.TextMapCarrier(tags))
+			if traceErr != nil {
+				logging.SugaredLog.Errorf("Producer failed to inject tracing span: %s", traceErr.Error())
+				// continue
+			}
 
 			eventStore := p.client.NewEventStore().
-				SetId(id).
-				SetChannel(p.config.kubemqChannel).
-				SetBody(msg)
+				// SetChannel(p.config.kubemqChannel).
+				// AddTag("sample", "sample-value").
+				SetId(fmt.Sprintf("%s.%d", p.name, counter)).
+				SetBody(getMessage(100))
+			eventStore.Tags = tags
 
 			// sending stream message
 			sendResult, err := eventStore.Send(p.ctx)
 			if err != nil {
-				logging.SugaredLog.Errorf("Producer failed to send id[%s] msg[%s] to channel %s: %s",
-					id, msg, p.config.kubemqChannel, err.Error())
+				logging.SugaredLog.Errorf("Producer failed to send id[%s] msg[%s] tags[%v] to channel %s: %s",
+					eventStore.Id, string(eventStore.Body), eventStore.Tags, p.config.kubemqChannel, err.Error())
 			}
 
 			// we might have an error in KubeMQ level
 			if sendResult.Err != nil {
-				logging.SugaredLog.Errorf("Producer didn't send id[%s] msg[%s] to channel %s: %s",
-					id, msg, p.config.kubemqChannel, sendResult.Err.Error())
+				logging.SugaredLog.Errorf("Producer didn't send id[%s] msg[%s] tags[%v] to channel %s: %s",
+					eventStore.Id, string(eventStore.Body), eventStore.Tags, p.config.kubemqChannel, sendResult.Err.Error())
 			} else {
-				logging.SugaredLog.Infof("Producer sent successfully id[%s] msg[%s] to channel %s",
-					id, msg, p.config.kubemqChannel)
+				logging.SugaredLog.Infof("Producer sent successfully id[%s] msg[%s] tags[%v] to channel %s",
+					eventStore.Id, string(eventStore.Body), eventStore.Tags, p.config.kubemqChannel)
 			}
 
 			counter++
 
-			// span.Finish()
+			span.Finish()
 
 		case <-p.ctx.Done():
 			return

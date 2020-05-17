@@ -16,26 +16,31 @@ export GO111MODULE = on
 
 ## infra
 
-#run-kubemq :		## Run Minikube and deploy KubeMQ
-# TODO start minikube
-# TODO wait 30sec
-# TODO deploy kubemq
+start-kubemq :		## Run Minikube and deploy KubeMQ
+	minikube start --vm-driver=hyperkit --cpus=4 --memory=8192 --disk-size=20g --enable-default-cni --network-plugin=cni --extra-config=kubelet.network-plugin=cni
+	@sleep 30s
+	kubectl apply -f https://get.kubemq.io/deploy
+	@sleep 30s
+	kubectl get kubemqclusters,kubemqdashboards -n kubemq
 
-#stop-kubemq :		## Stop Minikube and KubeMQ
-# TODO stop minikube
+stop-kubemq :		## Stop Minikube and KubeMQ
+	minikube stop
 
-#proxy-kubemq :		## Proxy KubeMQ
-# TODO proxy kubemq
+proxy-kubemq :		## Proxy KubeMQ
+	kubemqctl set cluster proxy
+
+open-kubemq-ui :		## Open KubeMQ UI in browser
+	kubemqctl get dashboard
 
 ## application
 
 build :		## Build application
 	go build
 
-run :		## Run application from source code
+start :		## Run application from source code
 	godotenv -f local.env go run main.go
 
-run-binary : build		## Run application from binary
+start-binary : build		## Run application from binary
 	source local-binary.env && ./kubemq-consumer
 
 ## helpers

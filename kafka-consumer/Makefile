@@ -16,7 +16,7 @@ export GO111MODULE = on
 
 ## infra
 
-run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
+start-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
 	docker-compose up -d
 
 stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
@@ -27,11 +27,11 @@ stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 build :		## Build application
 	go build
 
-run :		## Run application from source code
+start :		## Run application from source code
 	@export KAFKA_BOOTSTRAP_SERVERS=$$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $$2}') && \
 	godotenv -f local.env go run main.go
 
-run-binary : build		## Run application from binary
+start-binary : build		## Run application from binary
 	@export KAFKA_BOOTSTRAP_SERVERS=$$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $$2}') && \
 	source local-binary.env && ./kafka-consumer
 

@@ -57,10 +57,10 @@ func (p *KafkaProducer) startProducer() {
 			carrier := tracing.KafkaHeadersCarrier([]kafka.Header{
 				{"example", []byte("example-value")},
 			})
-			tracingErr := tracing.Inject(span, &carrier)
-			if tracingErr != nil {
-				logging.SugaredLog.Errorf("Producer failed to inject tracing span: %s", tracingErr.Error())
-				continue
+			traceErr := tracing.Inject(span, &carrier)
+			if traceErr != nil {
+				logging.SugaredLog.Errorf("Producer failed to inject tracing span: %s", traceErr.Error())
+				// continue
 			}
 
 			kafkaMsg := &kafka.Message{

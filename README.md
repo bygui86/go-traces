@@ -5,39 +5,105 @@ Go sample project to expose traces
 
 ## Run
 
+### Tracing server
+
+#### Jaeger
+
 start Jaeger
 ```shell script
-make run-jaeger
+make start-jaeger
+make open-jaeger-ui
+```
+
+#### or Zipkin `TODO`
+
+start Zipkin
+```shell script
+make start-zipkin
+make open-zipkin-ui
 ```
 
 ### HTTP applications
 
 1. start PostgreSQL
     ```shell script
-    make run-postgres
+    make start-postgres
     ```
 
 2. start server
     ```shell script
-    make run-http-server
+    make start-http-server
     ```
 
 3. start client
     ```shell script
-    make run-http-client
+    make start-http-client
     ```
 
 4. play a bit with [Postman](https://www.postman.com/) loading the prepared collections
     - [HTTP server collection](http-server/postman/postman_collection.json)
     - [HTTP client collection](http-client/postman/postman_collection.json)
 
+### Broker applications
+
+#### Kafka
+
+1. start Kafka
+    ```shell script
+    make start-kafka
+    ```
+
+2. start consumer
+    ```shell script
+    make start-kafka-consumer
+    ```
+
+3. start producer
+    ```shell script
+    make start-kafka-producer
+    ```
+
+#### KubeMQ
+
+1. start KubeMQ
+    ```shell script
+    make start-kubemq
+    make proxy-kubemq
+    # in another terminal
+    make open-kubemq-ui
+    ```
+
+2. start consumer
+    ```shell script
+    make start-kubemq-consumer
+    ```
+
+3. start producer
+    ```shell script
+    make start-kubemq-producer
+    ```
+
 ### gRPC applications
 
 `TODO`
 
-### Broker applications
+---
 
-`TODO`
+## Observability
+
+All applications expose `/metrics` endpoint on port:
+
+    - 9090 (clients and consumers)
+    - 9190 (servers and producers)
+
+### Logging
+
+All applications log per default on stdout. Encoding and level can be set through environment variables.
+
+| EnvVar | Default | Available values |
+| --- | --- | --- |
+| LOG_ENCODING | console | console, json |
+| LOG_LEVEL | info | trace, debug, info, warn, error, fatal |
 
 ---
 
@@ -54,8 +120,8 @@ make run-jaeger
 - [ ] external span propagation example
     - [ ] db tracer example - `NOT WORKING`
     - [x] http client/server example
-    - [ ] kafka example - `WIP`
-    - [ ] kubemq example
+    - [x] kafka example
+    - [x] kubemq example
     - [ ] grpc example
     - [ ] `TBD` http client/middleware/server example
     - [ ] `TBD` ask google example
@@ -118,7 +184,9 @@ make run-jaeger
 - https://github.com/confluentinc/confluent-kafka-go
 - https://github.com/jaegertracing/jaeger/blob/master/pkg/kafka/producer/config.go (shopify/sarama kafka library)
 ##### KubeMQ
-`TO BE SEARCHED`
+- https://github.com/kubemq-io/kubemq-go
+- https://github.com/kubemq-io/kubemq-go/blob/master/event_store.go
+- https://github.com/kubemq-io/kubemq-go/blob/master/trace.go
 
 ### Kubernetes
 - https://medium.com/opentracing/opentracing-on-kubernetes-get-yer-tracing-for-free-7a69cca03c8a

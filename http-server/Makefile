@@ -16,7 +16,7 @@ export GO111MODULE = on
 
 ## infra
 
-run-postgres :		## Run PostgreSQL in a container
+start-postgres :		## Run PostgreSQL in a container
 	docker run -d --rm --name postgres \
 		-e POSTGRES_PASSWORD=supersecret \
 		-p 5432:5432 \
@@ -30,10 +30,10 @@ stop-postgres :		## Stop PostgreSQL container
 build :		## Build application
 	go build
 
-run :		## Run application from source code
+start :		## Run application from source code
 	godotenv -f local.env go run main.go
 
-run-binary : build		## Run application from binary
+start-binary : build		## Run application from binary
 	source local-binary.env && ./http-server
 
 ## helpers
