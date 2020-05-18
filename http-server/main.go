@@ -7,6 +7,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/openzipkin/zipkin-go/reporter"
+
+	"github.com/bygui86/go-traces/http-server/config"
 	"github.com/bygui86/go-traces/http-server/logging"
 	"github.com/bygui86/go-traces/http-server/monitoring"
 	"github.com/bygui86/go-traces/http-server/rest"
@@ -15,11 +18,15 @@ import (
 
 const (
 	serviceName = "http-server"
+
+	zipkinHost = "localhost"
+	zipkinPort = 9411
 )
 
 var (
 	monitoringServer *monitoring.Server
-	tracingCloser    io.Closer
+	jaegerCloser     io.Closer
+	zipkinReporter   reporter.Reporter
 	restServer       *rest.Server
 )
 
@@ -28,9 +35,20 @@ func main() {
 
 	logging.SugaredLog.Infof("Start %s", serviceName)
 
-	monitoringServer = startMonitoringServer()
+	cfg := loadConfig()
 
-	tracingCloser = initTracing()
+	if cfg.GetEnableMonitoring() {
+		monitoringServer = startMonitoringServer()
+	}
+
+	if cfg.GetEnableTracing() {
+		switch cfg.GetTracingTech() {
+		case config.TracingTechJaeger:
+			jaegerCloser = initJaegerTracer()
+		case config.TracingTechZipkin:
+			zipkinReporter = initZipkinTracer()
+		}
+	}
 
 	restServer = startRestServer()
 
@@ -49,6 +67,11 @@ func initLogging() {
 	}
 }
 
+func loadConfig() *config.Config {
+	logging.Log.Debug("Load configurations")
+	return config.LoadConfig()
+}
+
 func startMonitoringServer() *monitoring.Server {
 	logging.Log.Debug("Start monitoring")
 	server := monitoring.New()
@@ -60,9 +83,24 @@ func startMonitoringServer() *monitoring.Server {
 	return server
 }
 
-func initTracing() io.Closer {
-	logging.Log.Debug("Init tracing")
-	return tracing.InitTestingTracing(serviceName)
+func initJaegerTracer() io.Closer {
+	logging.Log.Debug("Init Jaeger tracer")
+	closer, err := tracing.InitTestingJaeger(serviceName)
+	if err != nil {
+		logging.SugaredLog.Errorf("Jaeger tracer setup failed: %s", err.Error())
+		os.Exit(501)
+	}
+	return closer
+}
+
+func initZipkinTracer() reporter.Reporter {
+	logging.Log.Debug("Init Zipkin tracer")
+	zReporter, err := tracing.InitTestingZipkin(serviceName, zipkinHost, zipkinPort)
+	if err != nil {
+		logging.SugaredLog.Errorf("Zipkin tracer setup failed: %s", err.Error())
+		os.Exit(501)
+	}
+	return zReporter
 }
 
 func startRestServer() *rest.Server {
@@ -96,10 +134,17 @@ func shutdownAndWait(timeout int) {
 		restServer.Shutdown(timeout)
 	}
 
-	if tracingCloser != nil {
-		tracingErr := tracingCloser.Close()
-		if tracingErr != nil {
-			logging.SugaredLog.Errorf("Tracing closure failed: %s", tracingErr.Error())
+	if jaegerCloser != nil {
+		err := jaegerCloser.Close()
+		if err != nil {
+			logging.SugaredLog.Errorf("Jaeger tracer closure failed: %s", err.Error())
+		}
+	}
+
+	if zipkinReporter != nil {
+		err := zipkinReporter.Close()
+		if err != nil {
+			logging.SugaredLog.Errorf("Zipkin tracer closure failed: %s", err.Error())
 		}
 	}
 

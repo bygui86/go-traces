@@ -15,7 +15,7 @@ make start-jaeger
 make open-jaeger-ui
 ```
 
-#### or Zipkin `TODO`
+#### or Zipkin
 
 start Zipkin
 ```shell script
@@ -126,7 +126,7 @@ All applications log per default on stdout. Encoding and level can be set throug
     - [ ] `TBD` http client/middleware/server example
     - [ ] `TBD` ask google example
 - [x] send spans to jaeger
-- [ ] send spans to zipkin
+- [x] send spans to zipkin
 
 ---
 
@@ -157,6 +157,10 @@ All applications log per default on stdout. Encoding and level can be set throug
 
 ### Zipkin
 - https://github.com/openzipkin/zipkin-go
+- https://github.com/openzipkin/zipkin-go/blob/master/example_httpserver_test.go
+- https://github.com/openzipkin-contrib/zipkin-go-opentracing
+- https://github.com/openzipkin/zipkin-dependencies
+- https://medium.com/devthoughts/instrumenting-a-go-application-with-zipkin-b79cc858ac3e
 
 ### Internal propagation
 - https://docs.lightstep.com/docs/go-add-spans

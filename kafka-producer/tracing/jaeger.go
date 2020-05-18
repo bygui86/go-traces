@@ -2,7 +2,6 @@ package tracing
 
 import (
 	"io"
-	"os"
 	"time"
 
 	"github.com/opentracing/opentracing-go"
@@ -14,7 +13,7 @@ import (
 	"github.com/uber/jaeger-lib/metrics"
 	jaegerprom "github.com/uber/jaeger-lib/metrics/prometheus"
 
-	"github.com/bygui86/go-traces/kafka-consumer/logging"
+	"github.com/bygui86/go-traces/kafka-producer/logging"
 )
 
 /*
@@ -28,9 +27,9 @@ import (
 	JAEGER_PASSWORD environment variables.
 */
 
-func InitSample(serviceName string) io.Closer {
-	// Sample configuration for testing. Use constant sampling to sample every trace
-	// and enable LogSpan to log every span via configured Logger.
+// Sample configuration for an easy start. Use constant sampling to sample every trace and enable LogSpan to log
+// every span to stdout. No metrics are produced.
+func InitSampleJaeger(serviceName string) (io.Closer, error) {
 	cfg := jaegercfg.Configuration{
 		Sampler: &jaegercfg.SamplerConfig{
 			Type:  jaeger.SamplerTypeConst,
@@ -55,18 +54,16 @@ func InitSample(serviceName string) io.Closer {
 		jaegercfg.Metrics(nullMetricsFactory),
 	)
 	if tracerErr != nil {
-		logging.SugaredLog.Errorf("Tracer creation failed: %s", tracerErr.Error())
-		os.Exit(501)
+		return nil, tracerErr
 	}
 
-	logging.SugaredLog.Debugf("Global tracing registered: %t", opentracing.IsGlobalTracerRegistered())
-
-	return closer
+	logging.SugaredLog.Debugf("Jaeger global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	return closer, nil
 }
 
-func InitTestingTracing(serviceName string) io.Closer {
-	// Sample configuration for testing. Use constant sampling to sample every trace
-	// and enable LogSpan to log every span via configured Logger.
+// Sample configuration for testing. Use constant sampling to sample every trace and enable LogSpan to log every
+// span via configured Logger. Use a Prometheus registerer to expose metrics.
+func InitTestingJaeger(serviceName string) (io.Closer, error) {
 	cfg := jaegercfg.Configuration{
 		Sampler: &jaegercfg.SamplerConfig{
 			Type:  jaeger.SamplerTypeConst,
@@ -85,17 +82,15 @@ func InitTestingTracing(serviceName string) io.Closer {
 		jaegercfg.Metrics(jaegerprom.New(jaegerprom.WithRegisterer(prometheus.DefaultRegisterer))),
 	)
 	if tracerErr != nil {
-		logging.SugaredLog.Errorf("Tracer creation failed: %s", tracerErr.Error())
-		os.Exit(501)
+		return nil, tracerErr
 	}
 
-	logging.SugaredLog.Debugf("Global tracing registered: %t", opentracing.IsGlobalTracerRegistered())
-
-	return closer
+	logging.SugaredLog.Debugf("Jaeger global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	return closer, nil
 }
 
-func InitProductionTracing(serviceName string) io.Closer {
-	// Recommended configuration for production.
+// Recommended configuration for production.
+func InitProductionJaeger(serviceName string) (io.Closer, error) {
 	cfg := jaegercfg.Configuration{}
 
 	// Initialize tracing with a logger and a metrics factory
@@ -105,11 +100,9 @@ func InitProductionTracing(serviceName string) io.Closer {
 		jaegercfg.Metrics(jaegerprom.New(jaegerprom.WithRegisterer(prometheus.DefaultRegisterer))),
 	)
 	if tracerErr != nil {
-		logging.SugaredLog.Errorf("Tracer creation failed: %s", tracerErr.Error())
-		os.Exit(501)
+		return nil, tracerErr
 	}
 
-	logging.SugaredLog.Debugf("Global tracing registered: %t", opentracing.IsGlobalTracerRegistered())
-
-	return closer
+	logging.SugaredLog.Debugf("Jaeger global tracer registered: %t", opentracing.IsGlobalTracerRegistered())
+	return closer, nil
 }

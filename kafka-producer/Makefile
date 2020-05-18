@@ -17,10 +17,13 @@ export GO111MODULE = on
 ## infra
 
 start-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
-	docker-compose up -d
+	docker swarm init
+	docker stack deploy kafka -c kafka_docker-compose.yml
 
 stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
-	docker-compose down
+	docker stack rm kafka
+	@sleep 30
+	docker swarm leave --force
 
 ## application
 
