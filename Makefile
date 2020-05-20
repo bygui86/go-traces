@@ -79,31 +79,43 @@ open-kubemq-ui :		## Open KubeMQ UI in browser
 
 ### http
 
-start-http-server :		## Run HTTP server application
-	cd http-server/ && make run
+start-http-server :		## Run HTTP server
+	cd http-server/ && make start
 
-start-http-client :		## Run HTTP client application
-	cd http-client/ && make run
+start-http-client :		## Run HTTP client
+	cd http-client/ && make start
 
 ### kafka
 
-start-kafka-consumer :		## Run Kafka consumer application
-	cd kafka-consumer/ && make run
+start-kafka-consumer :		## Run Kafka consumer
+	cd kafka-consumer/ && make start
 
-start-kafka-producer :		## Run Kafka producer application
-	cd kafka-producer/ && make run
+start-kafka-producer :		## Run Kafka producer
+	cd kafka-producer/ && make start
 
 ### kubemq
 
-start-kubemq-consumer :		## Run KubeMQ consumer application
-	cd kubemq-consumer/ && make run
+start-kubemq-consumer :		## Run KubeMQ consumer
+	cd kubemq-consumer/ && make start
 
-start-kubemq-producer :		## Run KubeMQ producer application
-	cd kubemq-producer/ && make run
+start-kubemq-producer :		## Run KubeMQ producer
+	cd kubemq-producer/ && make start
 
 ### grpc
 
-# TODO
+build-protobuf :		## Compile protobuf
+	rm -f ./grpc-protobuf/*.pb.go
+	rm -f ./grpc-server/grpc_interface/*.pb.go
+	rm -f ./grpc-client/grpc_interface/*.pb.go
+	protoc --proto_path=./grpc-protobuf/ --go_out=plugins=grpc:./grpc-protobuf ./grpc-protobuf/*
+	cp ./grpc-protobuf/*.pb.go ./grpc-server/grpc_interface/
+	cp ./grpc-protobuf/*.pb.go ./grpc-client/grpc_interface/
+
+start-grpc-server :		## Run gRPC server
+	cd grpc-server/ && make start
+
+start-grpc-client :		## Run gRPC client
+	cd grpc-client/ && make start
 
 ## helpers
 

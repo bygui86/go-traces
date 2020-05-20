@@ -85,20 +85,55 @@ make open-zipkin-ui
 
 ### gRPC applications
 
-`TODO`
+1. start server
+    ```shell script
+    make start-grpc-server
+    ```
+
+2. start client
+    ```shell script
+    make start-grpc-client
+    ```
 
 ---
 
 ## Observability
+
+### Tracing
+
+All applications support both Jaeger and Zipkin.
+
+Tracing configurations can be set through environment variables:
+
+| EnvVar | Default | Available values |
+| --- | --- | --- |
+| ENABLE_MONITORING | true | true, false |
+| MONITOR_HOST | localhost | - |
+| MONITOR_PORT | 9090 | - |
+
+### Monitoring
 
 All applications expose `/metrics` endpoint on port:
 
     - 9090 (clients and consumers)
     - 9190 (servers and producers)
 
+Monitoring configurations can be set through environment variables:
+
+| EnvVar | Default | Available values |
+| --- | --- | --- |
+| ENABLE_TRACING | true | true, false |
+| TRACING_TECH | jaeger | jaeger, zipkin |
+
+All default Jaeger environment variables are fully supported transparently.
+
 ### Logging
 
-All applications log per default on stdout. Encoding and level can be set through environment variables.
+All applications use `go.uber.org/zap` as logging library.
+
+All applications log per default to stdout.
+
+Logging configurations can be set through environment variables:
 
 | EnvVar | Default | Available values |
 | --- | --- | --- |
@@ -111,22 +146,26 @@ All applications log per default on stdout. Encoding and level can be set throug
 
 - [x] rest server with database
 - [x] logging adoption
-- [x] monitoring adoption
+- [ ] monitoring adoption - `WIP`
+    - [x] http services
+    - [ ] kafka services
+    - [ ] kubemq services
+    - [ ] grpc services
 - [x] tracing adoption
+    - [x] jaeger
+    - [x] zipkin
 - [x] simple traces example
 - [x] traces with logging
 - [x] traces with monitoring
 - [x] internal span propagation example
-- [ ] external span propagation example
-    - [ ] db tracer example - `NOT WORKING`
+- [ ] external span propagation example - `WIP`
+    - [x] db tracer example
     - [x] http client/server example
     - [x] kafka example
     - [x] kubemq example
-    - [ ] grpc example
+    - [x] grpc example
     - [ ] `TBD` http client/middleware/server example
     - [ ] `TBD` ask google example
-- [x] send spans to jaeger
-- [x] send spans to zipkin
 
 ---
 
@@ -166,10 +205,12 @@ All applications log per default on stdout. Encoding and level can be set throug
 - https://docs.lightstep.com/docs/go-add-spans
 
 #### DB
+- https://github.com/ExpansiveWorlds/instrumentedsql - `ADOPTED SOLUTION`
 - https://medium.com/@bas.vanbeek/opencensus-and-go-database-sql-322a26be5cc5
 - https://opencensus.io/codelabs/gosqlguide/#0
-- https://github.com/opencensus-integrations/ocsql
-- https://github.com/gchaincl/sqlhooks
+- https://github.com/opencensus-integrations/ocsql - `NOT WORKING`
+- https://github.com/gchaincl/sqlhooks - `NOT TESTED`
+- https://github.com/luna-duclos/instrumentedsql - `NOT TESTED`
 
 #### HTTP tracing
 - https://docs.lightstep.com/docs/go-add-spans
