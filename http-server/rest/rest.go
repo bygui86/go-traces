@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/bygui86/go-traces/http-server/database"
@@ -17,7 +18,8 @@ func New(enableTracing bool) (*Server, error) {
 	var db *sql.DB
 	var dbErr error
 	if enableTracing {
-		db, dbErr = database.NewWithTracing()
+		// db, dbErr = database.NewWithOcsqlTracing() // WARN: does not work
+		db, dbErr = database.NewWithWrappedTracing()
 	} else {
 		db, dbErr = database.New()
 	}
@@ -35,22 +37,26 @@ func New(enableTracing bool) (*Server, error) {
 	return server, nil
 }
 
-func (s *Server) Start() {
+func (s *Server) Start() error {
 	logging.Log.Info("Start REST server")
 
 	if s.httpServer != nil && !s.running {
+		var err error
 		go func() {
-			err := s.httpServer.ListenAndServe()
+			err = s.httpServer.ListenAndServe()
 			if err != nil {
 				logging.SugaredLog.Errorf("REST server start failed: %s", err.Error())
 			}
 		}()
+		if err != nil {
+			return err
+		}
 		s.running = true
 		logging.SugaredLog.Infof("REST server listening on port %d", s.config.restPort)
-		return
+		return nil
 	}
 
-	logging.Log.Error("REST server start failed: HTTP server not initialized or HTTP server already running")
+	return fmt.Errorf("REST server start failed: HTTP server not initialized or HTTP server already running")
 }
 
 func (s *Server) Shutdown(timeout int) {
@@ -65,6 +71,7 @@ func (s *Server) Shutdown(timeout int) {
 		if err != nil {
 			logging.SugaredLog.Errorf("Error shutting down REST server: %s", err.Error())
 		}
+
 		s.running = false
 		return
 	}

@@ -106,14 +106,18 @@ func initZipkinTracer() reporter.Reporter {
 func startRestServer() *rest.Server {
 	logging.Log.Debug("Start REST server")
 
-	server, err := rest.New(true)
-	if err != nil {
-		logging.SugaredLog.Errorf("REST server creation failed: %s", err.Error())
+	server, newErr := rest.New(true)
+	if newErr != nil {
+		logging.SugaredLog.Errorf("REST server creation failed: %s", newErr.Error())
 		os.Exit(501)
 	}
 	logging.Log.Debug("REST server successfully created")
 
-	server.Start()
+	startErr := server.Start()
+	if startErr != nil {
+		logging.SugaredLog.Errorf("REST server start failed: %s", startErr.Error())
+		os.Exit(502)
+	}
 	logging.Log.Debug("REST server successfully started")
 
 	rest.RegisterCustomMetrics()
