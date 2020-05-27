@@ -16,12 +16,6 @@ type Server struct {
 }
 
 type config struct {
-	dbHost     string
-	dbPort     int
-	dbUsername string
-	dbPassword string
-	dbName     string
-	dbSslMode  string
-	restHost   string
-	restPort   int
+	restHost string
+	restPort int
 }

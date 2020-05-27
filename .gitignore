@@ -42,7 +42,6 @@ Thumbs.db
 ###################### GoLang ###################
 
 ########### Binaries
-go-kubernetes-istio
 *.exe
 *.exe~
 *.dll

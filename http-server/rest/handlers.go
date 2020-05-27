@@ -67,6 +67,7 @@ func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	logging.SugaredLog.Infof("Get product by ID: %d", id)
+
 	span.SetTag("product-id", id)
 
 	product := &database.Product{ID: id}

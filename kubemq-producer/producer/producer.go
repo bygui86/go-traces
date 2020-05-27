@@ -48,9 +48,9 @@ func (p *KubemqProducer) Start() {
 func (p *KubemqProducer) Shutdown(timeout int) {
 	logging.SugaredLog.Warnf("Shutdown kubemq producer, timeout %d", timeout)
 
-	time.Sleep(time.Duration(timeout) * time.Second)
 	p.ticker.Stop()
 	p.ctx.Done()
+	time.Sleep(time.Duration(timeout) * time.Second)
 	if p.client != nil {
 		err := p.client.Close()
 		if err != nil {
