@@ -235,3 +235,8 @@ Logging configurations can be set through environment variables:
 
 ### Kubernetes
 - https://medium.com/opentracing/opentracing-on-kubernetes-get-yer-tracing-for-free-7a69cca03c8a
+
+### Tools
+
+- https://grafana.com/blog/2019/11/22/kubecon-demo-a-preview-of-grafana-jaeger/
+- https://grafana.com/go/introduction-to-distributed-tracing
