@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grpc-client
+data:
+  # tracing
+  JAEGER_SERVICE_NAME: grpc-client
+  ## grafana-tempo
+  # JAEGER_AGENT_HOST: tempo.tracing.svc.cluster.local
+  ## jaeger
+  # agent
+  # JAEGER_AGENT_HOST: all-in-one-agent.tracing.svc.cluster.local
+  # JAEGER_AGENT_HOST: all-in-one-agent-no-headless.tracing.svc.cluster.local
+  # bypass agent directly to collector
+  JAEGER_ENDPOINT: http://all-in-one-collector.tracing.svc.cluster.local:14268/api/traces
+
+  # grpc
+  GRPC_SERVER_ADDRESS: grpc-server.apps.svc.cluster.local:50051
+  GRPC_GREETING_NAME: matteo

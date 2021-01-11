@@ -1,9 +1,5 @@
 
 # VARIABLES
-# -
-
-
-# ENVIRONMENT VARIABLES
 export GO111MODULE = on
 
 
@@ -16,7 +12,22 @@ export GO111MODULE = on
 
 ## infra
 
-# -
+start-jaeger :		## Start Jaeger
+	docker run -d --rm --name jaeger \
+		-e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
+		-p 5775:5775/udp \
+		-p 6831:6831/udp \
+		-p 6832:6832/udp \
+		-p 5778:5778 \
+		-p 16686:16686 \
+		-p 14268:14268 \
+		-p 14250:14250 \
+		-p 9411:9411 \
+		jaegertracing/all-in-one:1.21.0
+
+stop-jaeger :		## Stop Jaeger
+	docker container stop jaeger
+
 
 ## application
 
@@ -26,8 +37,30 @@ build :		## Build application
 start :		## Run application from source code
 	godotenv -f local.env go run main.go
 
-start-binary : build		## Run application from binary
-	source local-binary.env && ./grpc-server
+
+## containerisation
+
+__check-container-tag :
+	@[ "$(CONTAINER_TAG)" ] || ( echo "Missing container tag (CONTAINER_TAG), please define it and retry"; exit 1 )
+
+container-build : __check-container-tag		## Build container
+	docker build . -t bygui86/grpc-server:$(CONTAINER_TAG)
+
+container-push : __check-container-tag		## Push container to Docker hub
+	docker push bygui86/grpc-server:$(CONTAINER_TAG)
+
+
+## kubernetes
+
+deploy :		## Deploy on Kubernetes
+	kustomize build kube/ | kubectl apply -f -
+
+delete :		## Delete from Kubernetes
+	kustomize build kube/ | kubectl delete -f -
+
+logs :		## Show logs from Kubernetes pod
+	kubectl logs -l app=grpc-server -n apps --tail 10000 -f
+
 
 ## helpers
 

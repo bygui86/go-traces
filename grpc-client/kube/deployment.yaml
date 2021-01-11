@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc-client
+  template:
+    metadata:
+      labels:
+        app: grpc-client
+    spec:
+      terminationGracePeriodSeconds: 15
+      containers:
+        - name: grpc-client
+          image: bygui86/grpc-client:v1.0.0
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: grpc-client
+          ports:
+            - name: metrics
+              containerPort: 9090
+            # - name: probes
+            #   containerPort: 9091
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          # livenessProbe:
+          #   httpGet:
+          #     path: /live
+          #     port: probes
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 5
+          #   timeoutSeconds: 3
+          #   successThreshold: 1
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /ready
+          #     port: probes
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          #   timeoutSeconds: 3
+          #   successThreshold: 1
+          #   failureThreshold: 3

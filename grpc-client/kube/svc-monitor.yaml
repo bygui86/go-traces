@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: grpc-client
+spec:
+  selector:
+    matchLabels:
+      app: grpc-client
+  namespaceSelector:
+    matchNames:
+      - apps
+  endpoints:
+    - port: metrics
+      interval: 15s
+      scrapeTimeout: 14s
