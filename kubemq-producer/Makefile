@@ -1,9 +1,5 @@
 
 # VARIABLES
-# -
-
-
-# ENVIRONMENT VARIABLES
 export GO111MODULE = on
 
 
@@ -32,6 +28,7 @@ proxy-kubemq :		## Proxy KubeMQ
 open-kubemq-ui :		## Open KubeMQ UI in browser
 	kubemqctl get dashboard
 
+
 ## application
 
 build :		## Build application
@@ -40,8 +37,6 @@ build :		## Build application
 start :		## Run application from source code
 	godotenv -f local.env go run main.go
 
-start-binary : build		## Run application from binary
-	source local-binary.env && ./kubemq-producer
 
 ## helpers
 

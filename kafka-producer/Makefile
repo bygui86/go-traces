@@ -1,9 +1,5 @@
 
 # VARIABLES
-# -
-
-
-# ENVIRONMENT VARIABLES
 export GO111MODULE = on
 
 
@@ -25,6 +21,7 @@ stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 	@sleep 30
 	docker swarm leave --force
 
+
 ## application
 
 build :		## Build application
@@ -34,9 +31,6 @@ start :		## Run application from source code
 	@export KAFKA_BOOTSTRAP_SERVERS=$$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $$2}') && \
 	godotenv -f local.env go run main.go
 
-start-binary : build		## Run application from binary
-	@export KAFKA_BOOTSTRAP_SERVERS=$$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $$2}') && \
-    source local-binary.env && ./kafka-producer
 
 ## helpers
 

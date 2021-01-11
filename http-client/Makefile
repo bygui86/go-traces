@@ -1,9 +1,5 @@
 
 # VARIABLES
-# -
-
-
-# ENVIRONMENT VARIABLES
 export GO111MODULE = on
 
 
@@ -14,20 +10,12 @@ export GO111MODULE = on
 
 # ACTIONS
 
-## infra
-
-# -
-
-## application
-
 build :		## Build application
 	go build
 
 start :		## Run application from source code
 	godotenv -f local.env go run main.go
 
-start-binary : build		## Run application from binary
-	source local-binary.env && ./http-client
 
 ## helpers
 
