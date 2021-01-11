@@ -190,6 +190,7 @@ Logging configurations can be set through environment variables:
 
 ### Jaeger
 - https://www.jaegertracing.io/
+- https://www.jaegertracing.io/docs/1.21/troubleshooting/
 - https://github.com/jaegertracing/jaeger-client-go
     - https://github.com/jaegertracing/jaeger-client-go/blob/master/config/example_test.go
     - https://github.com/jaegertracing/jaeger-client-go/blob/master/metrics/prometheus/metrics_test.go
@@ -203,6 +204,10 @@ Logging configurations can be set through environment variables:
 
 ### Internal propagation
 - https://docs.lightstep.com/docs/go-add-spans
+
+### Grafana Tempo
+
+- https://grafana.com/docs/tempo/latest/
 
 #### DB
 - https://github.com/ExpansiveWorlds/instrumentedsql - `ADOPTED SOLUTION`
@@ -225,6 +230,7 @@ Logging configurations can be set through environment variables:
 - https://github.com/opentracing-contrib/go-grpc
 
 #### Broker tracing
+
 ##### Kafka
 - https://github.com/confluentinc/confluent-kafka-go
 - https://github.com/jaegertracing/jaeger/blob/master/pkg/kafka/producer/config.go (shopify/sarama kafka library)
@@ -240,3 +246,8 @@ Logging configurations can be set through environment variables:
 
 - https://grafana.com/blog/2019/11/22/kubecon-demo-a-preview-of-grafana-jaeger/
 - https://grafana.com/go/introduction-to-distributed-tracing
+
+### Integration with logs (Grafana Loki)
+
+- https://grafana.com/docs/tempo/latest/guides/loki-derived-fields/
+- https://grafana.com/docs/grafana/latest/datasources/loki/#derived-fields

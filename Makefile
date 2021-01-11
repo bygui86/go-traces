@@ -10,6 +10,7 @@
 
 # ACTIONS
 
+
 ## infra
 
 ### jaeger
@@ -32,6 +33,7 @@ stop-jaeger :		## Stop Jaeger (all-in-one) in container
 open-jaeger-ui :		## Open Jaeger UI in browser
 	open http://localhost:16686
 
+
 ### zipkin
 
 start-zipkin :		## Run Zipkin in a container
@@ -45,6 +47,7 @@ stop-zipkin :		## Stop Zipkin in container
 open-zipkin-ui :		## Open Zipkin UI in browser
 	open http://localhost:9411
 
+
 ### postgres
 
 start-postgres :		## Run PostgreSQL in a container
@@ -53,6 +56,7 @@ start-postgres :		## Run PostgreSQL in a container
 stop-postgres :		## Stop PostgreSQL in container
 	cd http-server/ && make stop-postgres
 
+
 ### kafka
 
 start-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
@@ -60,6 +64,7 @@ start-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
 
 stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 	cd kafka-producer/ && make stop-kafka
+
 
 ### kubemq
 
@@ -75,6 +80,8 @@ proxy-kubemq :		## Proxy KubeMQ
 open-kubemq-ui :		## Open KubeMQ UI in browser
 	cd kubemq-producer/ && make open-kubemq-ui
 
+
+
 ## applications
 
 ### http
@@ -85,21 +92,6 @@ start-http-server :		## Run HTTP server
 start-http-client :		## Run HTTP client
 	cd http-client/ && make start
 
-### kafka
-
-start-kafka-consumer :		## Run Kafka consumer
-	cd kafka-consumer/ && make start
-
-start-kafka-producer :		## Run Kafka producer
-	cd kafka-producer/ && make start
-
-### kubemq
-
-start-kubemq-consumer :		## Run KubeMQ consumer
-	cd kubemq-consumer/ && make start
-
-start-kubemq-producer :		## Run KubeMQ producer
-	cd kubemq-producer/ && make start
 
 ### grpc
 
@@ -116,6 +108,26 @@ start-grpc-server :		## Run gRPC server
 
 start-grpc-client :		## Run gRPC client
 	cd grpc-client/ && make start
+
+
+### kafka
+
+start-kafka-consumer :		## Run Kafka consumer
+	cd kafka-consumer/ && make start
+
+start-kafka-producer :		## Run Kafka producer
+	cd kafka-producer/ && make start
+
+
+### kubemq
+
+start-kubemq-consumer :		## Run KubeMQ consumer
+	cd kubemq-consumer/ && make start
+
+start-kubemq-producer :		## Run KubeMQ producer
+	cd kubemq-producer/ && make start
+
+
 
 ## helpers
 
