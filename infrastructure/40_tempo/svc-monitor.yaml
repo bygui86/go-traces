@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tempo
+spec:
+  selector:
+    matchLabels:
+      app: tempo
+      domain: tracing
+      group: tempo
+  namespaceSelector:
+    matchNames:
+      - tracing
+  endpoints:
+    - port: metrics
+      interval: 15s
+      scrapeTimeout: 14s
+    - port: query-jaeger-metrics
+      interval: 15s
+      scrapeTimeout: 14s

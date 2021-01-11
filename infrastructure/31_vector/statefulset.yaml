@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: loki
+spec:
+  replicas: 1
+  serviceName: loki-headless
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: loki
+  template:
+    metadata:
+      labels:
+        app: loki
+    spec:
+      serviceAccountName: loki
+      terminationGracePeriodSeconds: 4800
+
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+
+      containers:
+        - name: loki
+          # latest 6.1.2021
+          image: grafana/loki:latest@sha256:db10e6895b18e5703c1c2df093c9fec9b5f327438b34b5cd34eaeb5d7a25c53f
+          imagePullPolicy: IfNotPresent
+
+          args:
+            - "-config.file=/etc/loki/loki.yaml"
+
+          ports:
+            - name: http-metrics
+              containerPort: 3100
+              protocol: TCP
+
+          resources:
+            requests:
+              cpu: 2
+              memory: 2Gi
+            limits:
+              cpu: 4
+              memory: 4Gi
+
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki
+            - name: index
+              mountPath: /data/loki/index
+            - name: chunks
+              mountPath: /data/loki/chunks
+            - name: wal
+              mountPath: /data/loki/wal
+
+      volumes:
+        - name: config
+          secret:
+            secretName: loki
+
+  volumeClaimTemplates:
+    - metadata:
+        name: index
+        labels:
+          type: ssd
+          expandable: "true"
+      spec:
+        storageClassName: ssd-expandable
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 250G
+    - metadata:
+        name: chunks
+        labels:
+          type: ssd
+          expandable: "true"
+      spec:
+        storageClassName: ssd-expandable
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1T
+    - metadata:
+        name: wal
+        labels:
+          type: ssd
+          expandable: "true"
+      spec:
+        storageClassName: ssd-expandable
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 250G

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+    domain: monitoring
+  annotations:
+    description: "Namespace for Monitoring services"

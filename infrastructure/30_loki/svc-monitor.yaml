@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: loki
+spec:
+  selector:
+    matchLabels:
+      app: loki
+      domain: logging
+      group: loki
+      headless: "false"
+  namespaceSelector:
+    matchNames:
+      - logging
+  endpoints:
+    - port: http-metrics
+      interval: 15s
+      scrapeTimeout: 14s

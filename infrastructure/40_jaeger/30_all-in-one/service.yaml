@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: all-in-one-agent-no-headless
+  namespace: tracing
+  labels:
+    app: jaeger
+    app.kubernetes.io/component: service-agent
+    app.kubernetes.io/instance: all-in-one
+    app.kubernetes.io/managed-by: jaeger-operator
+    app.kubernetes.io/name: all-in-one-agent
+    app.kubernetes.io/part-of: jaeger
+spec:
+  sessionAffinity: None
+  selector:
+    app: jaeger
+    app.kubernetes.io/component: all-in-one
+    app.kubernetes.io/instance: all-in-one
+    app.kubernetes.io/managed-by: jaeger-operator
+    app.kubernetes.io/name: all-in-one
+    app.kubernetes.io/part-of: jaeger
+  ports:
+    - name: zk-compact-trft
+      port: 5775
+      protocol: UDP
+      targetPort: 5775
+    - name: config-rest
+      port: 5778
+      protocol: TCP
+      targetPort: 5778
+    - name: jg-compact-trft
+      port: 6831
+      protocol: UDP
+      targetPort: 6831
+    - name: jg-binary-trft
+      port: 6832
+      protocol: UDP
+      targetPort: 6832

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logging
+  labels:
+    name: logging
+    domain: logging
+  annotations:
+    description: "Namespace for Logging services"
