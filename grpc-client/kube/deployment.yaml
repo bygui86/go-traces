@@ -16,7 +16,7 @@ spec:
       containers:
         - name: grpc-client
           image: bygui86/grpc-client:v1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: grpc-client

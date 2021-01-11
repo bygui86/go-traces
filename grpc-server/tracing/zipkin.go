@@ -12,6 +12,10 @@ import (
 	"github.com/bygui86/go-traces/grpc-server/logging"
 )
 
+/*
+	/!\ WORK IN PROGRESS /!\
+*/
+
 const (
 	zipkinUrlFormat       = "http://%s:%d/api/v2/spans"
 	zipkinDefaultHostPort = ":0"

@@ -5,6 +5,7 @@
 
 | App             | code | metrics | logs | traces | dockerfile | k8s manifests | k8s probes | status |
 |-----------------|------|---------|------|--------|------------|---------------|------------|--------|
+| standalone      | ok   | todo    | todo | ok     | ok         | ok            | todo       | ready  |
 | grpc-protobuf   | ok   | -       | -    | -      | -          | -             | -          | ready  |
 | grpc-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | grpc-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
