@@ -3,20 +3,18 @@ kind: ConfigMap
 metadata:
   name: standalone
 data:
+  # tracing
+  ## jaeger general
   JAEGER_SERVICE_NAME: standalone
-
-  # grafana-tempo
-#  JAEGER_AGENT_HOST: tempo.tracing.svc.cluster.local
-
-  # jaeger
-  ## agent
-  JAEGER_AGENT_HOST: all-in-one-agent.tracing.svc.cluster.local
-#  JAEGER_AGENT_HOST: all-in-one-agent-no-headless.tracing.svc.cluster.local
-  JAEGER_AGENT_PORT: 6831
-  ## bypass agent directly to collector
-#  JAEGER_ENDPOINT: http://all-in-one-collector.tracing.svc.cluster.local:14268/api/traces
-
   JAEGER_SAMPLER_TYPE: const
-  JAEGER_SAMPLER_PARAM: 1
-  JAEGER_REPORTER_LOG_SPANS: true
+  JAEGER_SAMPLER_PARAM: "1"
+  JAEGER_REPORTER_LOG_SPANS: "true"
   JAEGER_REPORTER_FLUSH_INTERVAL: 1s
+  JAEGER_AGENT_PORT: "6831"
+  ## grafana-tempo
+  # JAEGER_AGENT_HOST: tempo.tracing.svc.cluster.local
+  ## jaeger
+  ### agent
+  JAEGER_AGENT_HOST: jaeger-agent.tracing.svc.cluster.local
+  ### bypass agent, directly to collector
+  # JAEGER_ENDPOINT: http://jaeger-collector.tracing.svc.cluster.local:14268/api/traces

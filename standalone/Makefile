@@ -59,7 +59,7 @@ delete :		## Delete from Kubernetes
 	kustomize build kube/ | kubectl delete -f -
 
 logs :		## Show logs from Kubernetes pod
-	kubectl logs -l app=grpc-server -n apps --tail 10000 -f
+	kubectl logs -l app=standalone -n apps --tail 10000 -f
 
 
 ## helpers

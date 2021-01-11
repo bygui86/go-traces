@@ -16,7 +16,7 @@ spec:
       containers:
         - name: standalone
           image: bygui86/standalone:v1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: standalone
