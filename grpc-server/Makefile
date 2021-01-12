@@ -12,7 +12,7 @@ export GO111MODULE = on
 
 ## infra
 
-start-jaeger :		## Start Jaeger
+run-jaeger :		## Start Jaeger
 	docker run -d --rm --name jaeger \
 		-e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
 		-p 5775:5775/udp \
@@ -34,7 +34,7 @@ stop-jaeger :		## Stop Jaeger
 build :		## Build application
 	go build
 
-start :		## Run application from source code
+run :		## Run application from source code
 	godotenv -f local.env go run main.go
 
 

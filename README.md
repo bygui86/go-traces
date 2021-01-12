@@ -11,7 +11,7 @@ Go sample project to expose traces
 
 start Jaeger
 ```shell script
-make start-jaeger
+make run-jaeger
 make open-jaeger-ui
 ```
 
@@ -19,7 +19,7 @@ make open-jaeger-ui
 
 start Zipkin
 ```shell script
-make start-zipkin
+make run-zipkin
 make open-zipkin-ui
 ```
 
@@ -27,17 +27,17 @@ make open-zipkin-ui
 
 1. start PostgreSQL
     ```shell script
-    make start-postgres
+    make run-postgres
     ```
 
 2. start server
     ```shell script
-    make start-http-server
+    make run-http-server
     ```
 
 3. start client
     ```shell script
-    make start-http-client
+    make run-http-client
     ```
 
 4. play a bit with [Postman](https://www.postman.com/) loading the prepared collections
@@ -50,24 +50,24 @@ make open-zipkin-ui
 
 1. start Kafka
     ```shell script
-    make start-kafka
+    make run-kafka
     ```
 
 2. start consumer
     ```shell script
-    make start-kafka-consumer
+    make run-kafka-consumer
     ```
 
 3. start producer
     ```shell script
-    make start-kafka-producer
+    make run-kafka-producer
     ```
 
 #### KubeMQ
 
 1. start KubeMQ
     ```shell script
-    make start-kubemq
+    make run-kubemq
     make proxy-kubemq
     # in another terminal
     make open-kubemq-ui
@@ -75,24 +75,24 @@ make open-zipkin-ui
 
 2. start consumer
     ```shell script
-    make start-kubemq-consumer
+    make run-kubemq-consumer
     ```
 
 3. start producer
     ```shell script
-    make start-kubemq-producer
+    make run-kubemq-producer
     ```
 
 ### gRPC applications
 
 1. start server
     ```shell script
-    make start-grpc-server
+    make run-grpc-server
     ```
 
 2. start client
     ```shell script
-    make start-grpc-client
+    make run-grpc-client
     ```
 
 ---

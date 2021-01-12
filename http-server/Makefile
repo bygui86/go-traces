@@ -13,7 +13,7 @@ export GO111MODULE = on
 build :		## Build application
 	go build
 
-start :		## Run application from source code
+run :		## Run application from source code
 	godotenv -f local.env go run main.go
 
 

@@ -12,7 +12,7 @@ export GO111MODULE = on
 
 ## infra
 
-start-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
+run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
 	docker swarm init
 	docker stack deploy kafka -c kafka_docker-compose.yml
 
@@ -27,7 +27,7 @@ stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 build :		## Build application
 	go build
 
-start :		## Run application from source code
+run :		## Run application from source code
 	@export KAFKA_BOOTSTRAP_SERVERS=$$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $$2}') && \
 	godotenv -f local.env go run main.go
 

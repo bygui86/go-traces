@@ -15,7 +15,7 @@
 
 ### jaeger
 
-start-jaeger :		## Run Jaeger (all-in-one) in a container
+run-jaeger :		## Run Jaeger (all-in-one) in a container
 	docker run -d --rm --name jaeger \
 		-p 5775:5775/udp \
 		-p 5778:5578 \
@@ -36,7 +36,7 @@ open-jaeger-ui :		## Open Jaeger UI in browser
 
 ### zipkin
 
-start-zipkin :		## Run Zipkin in a container
+run-zipkin :		## Run Zipkin in a container
 	docker run -d --rm --name zipkin \
 		-p 9411:9411 \
 		openzipkin/zipkin
@@ -50,8 +50,8 @@ open-zipkin-ui :		## Open Zipkin UI in browser
 
 ### postgres
 
-start-postgres :		## Run PostgreSQL in a container
-	cd http-server/ && make start-postgres
+run-postgres :		## Run PostgreSQL in a container
+	cd http-server/ && make run-postgres
 
 stop-postgres :		## Stop PostgreSQL in container
 	cd http-server/ && make stop-postgres
@@ -59,8 +59,8 @@ stop-postgres :		## Stop PostgreSQL in container
 
 ### kafka
 
-start-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
-	cd kafka-producer/ && make start-kafka
+run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
+	cd kafka-producer/ && make run-kafka
 
 stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 	cd kafka-producer/ && make stop-kafka
@@ -68,8 +68,8 @@ stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 
 ### kubemq
 
-start-kubemq :		## Run Minikube and deploy KubeMQ
-	cd kubemq-producer/ && make start-kubemq
+run-kubemq :		## Run Minikube and deploy KubeMQ
+	cd kubemq-producer/ && make run-kubemq
 
 stop-kubemq :		## Stop Minikube and KubeMQ
 	cd kubemq-producer/ && make stop-kubemq
@@ -86,10 +86,10 @@ open-kubemq-ui :		## Open KubeMQ UI in browser
 
 ### http
 
-start-http-server :		## Run HTTP server
+run-http-server :		## Run HTTP server
 	cd http-server/ && make start
 
-start-http-client :		## Run HTTP client
+run-http-client :		## Run HTTP client
 	cd http-client/ && make start
 
 
@@ -103,28 +103,28 @@ build-protobuf :		## Compile protobuf
 	cp ./grpc-protobuf/*.pb.go ./grpc-server/grpc_interface/
 	cp ./grpc-protobuf/*.pb.go ./grpc-client/grpc_interface/
 
-start-grpc-server :		## Run gRPC server
+run-grpc-server :		## Run gRPC server
 	cd grpc-server/ && make start
 
-start-grpc-client :		## Run gRPC client
+run-grpc-client :		## Run gRPC client
 	cd grpc-client/ && make start
 
 
 ### kafka
 
-start-kafka-consumer :		## Run Kafka consumer
+run-kafka-consumer :		## Run Kafka consumer
 	cd kafka-consumer/ && make start
 
-start-kafka-producer :		## Run Kafka producer
+run-kafka-producer :		## Run Kafka producer
 	cd kafka-producer/ && make start
 
 
 ### kubemq
 
-start-kubemq-consumer :		## Run KubeMQ consumer
+run-kubemq-consumer :		## Run KubeMQ consumer
 	cd kubemq-consumer/ && make start
 
-start-kubemq-producer :		## Run KubeMQ producer
+run-kubemq-producer :		## Run KubeMQ producer
 	cd kubemq-producer/ && make start
 
 

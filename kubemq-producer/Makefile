@@ -12,7 +12,7 @@ export GO111MODULE = on
 
 ## infra
 
-start-kubemq :		## Run Minikube and deploy KubeMQ
+run-kubemq :		## Run Minikube and deploy KubeMQ
 	minikube start --vm-driver=hyperkit --cpus=4 --memory=8192 --disk-size=20g --enable-default-cni --network-plugin=cni --extra-config=kubelet.network-plugin=cni
 	@sleep 30s
 	kubectl apply -f https://get.kubemq.io/deploy
@@ -34,7 +34,7 @@ open-kubemq-ui :		## Open KubeMQ UI in browser
 build :		## Build application
 	go build
 
-start :		## Run application from source code
+run :		## Run application from source code
 	godotenv -f local.env go run main.go
 
 
