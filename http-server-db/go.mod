@@ -1,10 +1,9 @@
-module github.com/bygui86/go-traces/http-server
+module github.com/bygui86/go-traces/http-server-db
 
 go 1.15
 
 require (
-	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
-	github.com/google/uuid v1.0.0
+	github.com/ExpansiveWorlds/instrumentedsql v0.0.0-20171218214018-45abb4b1947d
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.9.0
 	github.com/opentracing/opentracing-go v1.2.0

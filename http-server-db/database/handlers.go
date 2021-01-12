@@ -2,32 +2,39 @@ package database
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"database/sql"
 
-	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 )
 
-func (db *InMemoryDb) GetProducts(start, count int, ctx context.Context) ([]*Product, error) {
+func GetProducts(db *sql.DB, start, count int, ctx context.Context) ([]*Product, error) {
 	span := opentracing.StartSpan(
 		"get-products-db",
 		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
 	defer span.Finish()
 
-	query := fmt.Sprintf("all-start[%d]-count[%d]", start, count)
-	span.SetTag("query", query)
+	span.SetTag("query", getProductsQuery)
 	span.SetTag("count", count)
 	span.SetTag("start", start)
 	span.LogKV(
-		"query", query,
+		"query", getProductsQuery,
 		"count", count,
 		"start", start,
 	)
 
+	rows, err := db.QueryContext(ctx, getProductsQuery, count, start)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
 	products := make([]*Product, 0)
-	for _, prod := range db.products {
-		products = append(products, prod)
+	for rows.Next() {
+		var prod Product
+		if err := rows.Scan(&prod.ID, &prod.Name, &prod.Price); err != nil {
+			return nil, err
+		}
+		products = append(products, &prod)
 	}
 
 	span.SetTag("products-found", len(products))
@@ -36,7 +43,7 @@ func (db *InMemoryDb) GetProducts(start, count int, ctx context.Context) ([]*Pro
 	return products, nil
 }
 
-func (db *InMemoryDb) GetProduct(product *Product, ctx context.Context) *Product {
+func GetProduct(db *sql.DB, product *Product, ctx context.Context) error {
 	span := opentracing.StartSpan(
 		"get-product-db",
 		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
@@ -45,10 +52,11 @@ func (db *InMemoryDb) GetProduct(product *Product, ctx context.Context) *Product
 	span.SetTag("product-id", product.ID)
 	span.LogKV("product-id", product.ID)
 
-	return db.products[product.ID]
+	return db.QueryRowContext(ctx, getProductQuery, product.ID).
+		Scan(&product.Name, &product.Price)
 }
 
-func (db *InMemoryDb) CreateProduct(product *Product, ctx context.Context) error {
+func CreateProduct(db *sql.DB, product *Product, ctx context.Context) error {
 	span := opentracing.StartSpan(
 		"create-product-db",
 		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
@@ -57,16 +65,14 @@ func (db *InMemoryDb) CreateProduct(product *Product, ctx context.Context) error
 	span.SetTag("product", product.String())
 	span.LogKV("product", product.String())
 
-	newUuid, err := uuid.NewRandom()
+	err := db.QueryRowContext(ctx, createProductQuery, product.Name, product.Price).Scan(&product.ID)
 	if err != nil {
 		return err
 	}
-	product.ID = newUuid.String()
-	db.products[newUuid.String()] = product
 	return nil
 }
 
-func (db *InMemoryDb) UpdateProduct(product *Product, ctx context.Context) error {
+func UpdateProduct(db *sql.DB, product *Product, ctx context.Context) error {
 	span := opentracing.StartSpan(
 		"update-product-db",
 		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
@@ -75,19 +81,11 @@ func (db *InMemoryDb) UpdateProduct(product *Product, ctx context.Context) error
 	span.SetTag("product", product.String())
 	span.LogKV("product", product.String())
 
-	if product != nil {
-		if product.ID != "" {
-			db.products[product.ID] = product
-		} else {
-			return errors.New("updated product ID cannot be empty")
-		}
-	} else {
-		return errors.New("updated product cannot be empty")
-	}
-	return nil
+	_, err := db.ExecContext(ctx, updateProductQuery, product.Name, product.Price, product.ID)
+	return err
 }
 
-func (db *InMemoryDb) DeleteProduct(productId string, ctx context.Context) error {
+func DeleteProduct(db *sql.DB, productId int, ctx context.Context) error {
 	span := opentracing.StartSpan(
 		"delete-product-db",
 		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
@@ -96,10 +94,6 @@ func (db *InMemoryDb) DeleteProduct(productId string, ctx context.Context) error
 	span.SetTag("product-id", productId)
 	span.LogKV("product-id", productId)
 
-	if productId != "" {
-		db.products[productId] = nil
-	} else {
-		return errors.New("product ID cannot be empty")
-	}
-	return nil
+	_, err := db.ExecContext(ctx, deleteProductQuery, productId)
+	return err
 }

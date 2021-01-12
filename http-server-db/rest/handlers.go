@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -9,8 +10,8 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 
-	"github.com/bygui86/go-traces/http-server/database"
-	"github.com/bygui86/go-traces/http-server/logging"
+	"github.com/bygui86/go-traces/http-server-db/database"
+	"github.com/bygui86/go-traces/http-server-db/logging"
 )
 
 func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) {
@@ -28,7 +29,7 @@ func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) 
 	if start < 0 {
 		start = 0
 	}
-	products, err := s.db.GetProducts(start, count, ctx)
+	products, err := database.GetProducts(s.db, start, count, ctx)
 	if err != nil {
 		errMsg := "Get products failed: " + err.Error()
 		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
@@ -55,17 +56,32 @@ func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
 	startTimer := time.Now()
 
 	vars := mux.Vars(request)
-	id := vars["id"]
+	id, idErr := strconv.Atoi(vars["id"])
+	if idErr != nil {
+		errMsg := "Get product failed: Invalid product ID"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
 
-	logging.SugaredLog.Infof("Get product by ID: %s", id)
+		span.SetTag("error", errMsg)
+		span.LogKV("error", errMsg)
+		return
+	}
+
+	logging.SugaredLog.Infof("Get product by ID: %d", id)
 
 	span.SetTag("product-id", id)
 
-	getProduct := &database.Product{ID: id}
-	product := s.db.GetProduct(getProduct, ctx)
-	if product == nil {
-		errMsg := "Get product failed: product not found"
-		sendErrorResponse(writer, http.StatusNotFound, errMsg)
+	product := &database.Product{ID: id}
+	getErr := database.GetProduct(s.db, product, ctx)
+	if getErr != nil {
+		var errMsg string
+		switch getErr {
+		case sql.ErrNoRows:
+			errMsg = "Get product failed: product not found"
+			sendErrorResponse(writer, http.StatusNotFound, errMsg)
+		default:
+			errMsg = getErr.Error()
+			sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
+		}
 
 		span.SetTag("product-found", false)
 		span.SetTag("error", errMsg)
@@ -99,11 +115,11 @@ func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request
 		span.LogKV("product-created", false, "error", errMsg)
 		return
 	}
-	defer closeRequestBody(request.Body)
+	defer request.Body.Close()
 
 	logging.SugaredLog.Infof("Create product %s", product.String())
 
-	createErr := s.db.CreateProduct(product, ctx)
+	createErr := database.CreateProduct(s.db, product, ctx)
 	if createErr != nil {
 		errMsg := "Create product failed: " + createErr.Error()
 		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
@@ -131,7 +147,16 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 	startTimer := time.Now()
 
 	vars := mux.Vars(request)
-	id := vars["id"]
+	id, idErr := strconv.Atoi(vars["id"])
+	if idErr != nil {
+		errMsg := "Update product failed: invalid product ID"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
+
+		span.SetTag("product-updated", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-updated", false, "error", errMsg)
+		return
+	}
 
 	var product *database.Product
 	unmarshErr := json.NewDecoder(request.Body).Decode(&product)
@@ -144,13 +169,13 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 		span.LogKV("product-updated", false, "error", errMsg)
 		return
 	}
-	defer closeRequestBody(request.Body)
+	defer request.Body.Close()
 
 	product.ID = id
 	logging.SugaredLog.Infof("Update product: %s", product.String())
 	span.SetTag("product-id", id)
 
-	updateErr := s.db.UpdateProduct(product, ctx)
+	updateErr := database.UpdateProduct(s.db, product, ctx)
 	if updateErr != nil {
 		errMsg := "Update product failed: " + updateErr.Error()
 		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
@@ -178,12 +203,21 @@ func (s *Server) deleteProduct(writer http.ResponseWriter, request *http.Request
 	startTimer := time.Now()
 
 	vars := mux.Vars(request)
-	id := vars["id"]
+	id, idErr := strconv.Atoi(vars["id"])
+	if idErr != nil {
+		errMsg := "Delete product failed: invalid Product ID"
+		sendErrorResponse(writer, http.StatusBadRequest, errMsg)
 
-	logging.SugaredLog.Infof("Delete product by ID: %s", id)
+		span.SetTag("product-deleted", false)
+		span.SetTag("error", errMsg)
+		span.LogKV("product-deleted", false, "error", errMsg)
+		return
+	}
+
+	logging.SugaredLog.Infof("Delete product by ID: %d", id)
 	span.SetTag("product-id", id)
 
-	deleteErr := s.db.DeleteProduct(id, ctx)
+	deleteErr := database.DeleteProduct(s.db, id, ctx)
 	if deleteErr != nil {
 		errMsg := "Delete product failed: " + deleteErr.Error()
 		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)

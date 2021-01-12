@@ -9,6 +9,7 @@
 | grpc-protobuf   | ok   | -       | -    | -      | -          | -             | -          | ready  |
 | grpc-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | grpc-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| http-server-db  | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
 | http-server     | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
 | http-client     | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
 | kubemq-producer | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |

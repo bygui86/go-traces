@@ -2,11 +2,12 @@ package rest
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
-	"github.com/bygui86/go-traces/http-server/database"
-	"github.com/bygui86/go-traces/http-server/logging"
+	"github.com/bygui86/go-traces/http-server-db/database"
+	"github.com/bygui86/go-traces/http-server-db/logging"
 )
 
 func New(enableTracing bool) (*Server, error) {
@@ -14,7 +15,17 @@ func New(enableTracing bool) (*Server, error) {
 
 	cfg := loadConfig()
 
-	db := database.New()
+	var db *sql.DB
+	var dbErr error
+	if enableTracing {
+		// db, dbErr = database.NewWithOcsqlTracing() // WARN: does not work
+		db, dbErr = database.NewWithWrappedTracing()
+	} else {
+		db, dbErr = database.New()
+	}
+	if dbErr != nil {
+		return nil, dbErr
+	}
 
 	server := &Server{
 		config: cfg,

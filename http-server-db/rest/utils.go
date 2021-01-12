@@ -3,13 +3,12 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
-	"github.com/bygui86/go-traces/http-server/commons"
-	"github.com/bygui86/go-traces/http-server/logging"
+	"github.com/bygui86/go-traces/http-server-db/commons"
+	"github.com/bygui86/go-traces/http-server-db/logging"
 )
 
 const (
@@ -69,11 +68,4 @@ func sendJsonResponse(writer http.ResponseWriter, code int, payload interface{})
 
 func sendErrorResponse(writer http.ResponseWriter, code int, message string) {
 	sendJsonResponse(writer, code, map[string]string{"error": message})
-}
-
-func closeRequestBody(body io.ReadCloser) {
-	err := body.Close()
-	if err != nil {
-		logging.SugaredLog.Errorf("Closing request body failed: %s", err.Error())
-	}
 }

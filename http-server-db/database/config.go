@@ -1,8 +1,8 @@
 package database
 
 import (
-	"github.com/bygui86/go-traces/http-server/logging"
-	"github.com/bygui86/go-traces/http-server/utils"
+	"github.com/bygui86/go-traces/http-server-db/logging"
+	"github.com/bygui86/go-traces/http-server-db/utils"
 )
 
 const (
