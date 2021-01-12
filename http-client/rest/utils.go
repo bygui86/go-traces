@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -91,4 +92,11 @@ func sendJsonResponse(writer http.ResponseWriter, code int, payload interface{})
 
 func sendErrorResponse(writer http.ResponseWriter, code int, message string) {
 	sendJsonResponse(writer, code, map[string]string{"error": message})
+}
+
+func closeBody(body io.ReadCloser) {
+	err := body.Close()
+	if err != nil {
+		logging.SugaredLog.Errorf("Closing request body failed: %s", err.Error())
+	}
 }

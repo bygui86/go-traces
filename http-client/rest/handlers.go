@@ -78,7 +78,7 @@ func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) 
 		span.LogKV("products-found", 0, "error", errMsg)
 		return
 	}
-	defer response.Body.Close()
+	defer closeBody(response.Body)
 
 	span.SetTag("products-found", len(products))
 	span.LogKV("products-found", len(products))
@@ -161,7 +161,7 @@ func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
 		span.LogKV("product-id", id, "product-found", false, "error", errMsg)
 		return
 	}
-	defer response.Body.Close()
+	defer closeBody(response.Body)
 
 	span.SetTag("product-found", true)
 	span.LogKV("product-id", id, "product-found", true)
@@ -196,7 +196,8 @@ func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request
 	endpointUrl := &url.URL{Path: rootProductsEndpoint}
 	path := s.baseURL.ResolveReference(endpointUrl)
 	restRequest, reqErr := http.NewRequest(http.MethodPost, path.String(), request.Body)
-	defer request.Body.Close()
+	defer closeBody(request.Body)
+
 	if reqErr != nil {
 		errMsg := "Create product failed: " + reqErr.Error()
 		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
@@ -247,7 +248,7 @@ func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request
 		span.LogKV("product-created", false, "error", errMsg)
 		return
 	}
-	defer response.Body.Close()
+	defer closeBody(response.Body)
 
 	span.SetTag("product", product.String())
 	span.SetTag("product-created", true)
@@ -295,7 +296,8 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 	endpointUrl := &url.URL{Path: fmt.Sprintf(productsIdServerEndpoint, id)}
 	path := s.baseURL.ResolveReference(endpointUrl)
 	restRequest, reqErr := http.NewRequest(http.MethodPut, path.String(), request.Body)
-	defer request.Body.Close()
+	defer closeBody(request.Body)
+
 	if reqErr != nil {
 		errMsg := "Update product failed: " + reqErr.Error()
 		sendErrorResponse(writer, http.StatusInternalServerError, errMsg)
@@ -346,7 +348,7 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 		span.LogKV("product-updated", false, "error", errMsg)
 		return
 	}
-	defer response.Body.Close()
+	defer closeBody(response.Body)
 
 	span.SetTag("product", product.String())
 	span.SetTag("product-updated", true)
