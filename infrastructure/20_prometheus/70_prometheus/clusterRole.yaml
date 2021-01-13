@@ -5,16 +5,6 @@ metadata:
 rules:
 
   - apiGroups:
-    - policy
-    resources:
-      - podsecuritypolicies
-    verbs:
-      - use
-    resourceNames:
-      # - prometheus
-      - sbt-restricted
-
-  - apiGroups:
       - ""
     resources:
       - nodes/metrics

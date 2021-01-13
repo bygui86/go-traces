@@ -183,14 +183,14 @@ spec:
             # - mountPath: /etc/dashboards/logging/vector.json
             #   subPath: vector.json
             #   name: grafana-dashboard-vector
-            ## brokers
-            # - mountPath: /etc/dashboards/brokers/kubemq.json
-            #   subPath: kubemq.json
-            #   name: grafana-dashboard-kubemq
-            ## tracing
-            # - mountPath: /etc/dashboards/security/jaeger.json
-            #   subPath: jaeger.json
-            #   name: grafana-dashboard-jaeger
+            ### brokers
+            - mountPath: /etc/dashboards/brokers/kubemq.json
+              subPath: kubemq.json
+              name: grafana-dashboard-kubemq
+            ### tracing
+            - mountPath: /etc/dashboards/security/jaeger.json
+              subPath: jaeger.json
+              name: grafana-dashboard-jaeger
             - mountPath: /etc/dashboards/security/tempo-operational.json
               subPath: tempo-operational.json
               name: grafana-dashboard-tempo-operational
@@ -333,10 +333,14 @@ spec:
         # - configMap:
         #     name: grafana-dashboard-vector
         #   name: grafana-dashboard-vector
-        ## tracing
-        # - configMap:
-        #     name: grafana-dashboard-jaeger
-        #   name: grafana-dashboard-jaeger
+        ### brokers
+        - configMap:
+            name: grafana-dashboard-kubemq
+          name: grafana-dashboard-kubemq
+        ### tracing
+        - configMap:
+            name: grafana-dashboard-jaeger
+          name: grafana-dashboard-jaeger
         - configMap:
             name: grafana-dashboard-tempo-operational
           name: grafana-dashboard-tempo-operational
@@ -349,7 +353,3 @@ spec:
         - configMap:
             name: grafana-dashboard-tempo-writes
           name: grafana-dashboard-tempo-writes
-        ## brokers
-        - configMap:
-            name: grafana-dashboard-kubemq
-          name: grafana-dashboard-kubemq

@@ -9,9 +9,9 @@
 | grpc-protobuf   | ok   | -       | -    | -      | -          | -             | -          | ready  |
 | grpc-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | grpc-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
-| http-server-db  | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
-| http-server     | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
-| http-client     | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
+| http-server-db  | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| http-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| http-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | kubemq-producer | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
 | kubemq-consumer | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
 | kafka-producer  | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
@@ -19,30 +19,20 @@
 
 ### Specific
 
-- [ ] http-server - remove postgres dependency
+- [x] ~~split http-server into in-memory-db and db~~
 - [ ] add k8s probes on each app
+- [ ] replace all `host = locahost` with `host = 0.0.0.0` as default config 
 
 ## Infrastructure
 
-- [x] makefile
+- [x] ~~makefile~~
 
-- [x] namespaces
+- [x] ~~namespaces~~
   - [x] kustomize
   - [x] manifests
   - [x] labels
 
-- [ ] prometheus
-  - [ ] kustomize
-  - [x] manifests
-  - [x] labels
-  - [ ] resources
-  - [ ] storage
-  - [ ] affinity/tolerations
-  - [ ] rbac/security-ctx
-  - [ ] config
-  - [x] metrics/dashboard
-
-- [x] loki
+- [x] ~~prometheus~~
   - [x] kustomize
   - [x] manifests
   - [x] labels
@@ -51,7 +41,20 @@
   - [x] affinity/tolerations
   - [x] rbac/security-ctx
   - [x] config
-  - [x] metrics/dashboard
+  - [x] metrics
+  - [x] dashboard
+
+- [x] ~~loki~~
+  - [x] kustomize
+  - [x] manifests
+  - [x] labels
+  - [x] resources
+  - [x] storage
+  - [x] affinity/tolerations
+  - [x] rbac/security-ctx
+  - [x] config
+  - [x] metrics
+  - [x] dashboard
 
 - [ ] promtail
   - [ ] kustomize
@@ -62,7 +65,8 @@
   - [ ] affinity/tolerations
   - [ ] rbac/security-ctx
   - [ ] config
-  - [ ] metrics/dashboard
+  - [ ] metrics
+  - [ ] dashboard
 
 - [ ] vector
   - [ ] kustomize
@@ -73,9 +77,10 @@
   - [ ] affinity/tolerations
   - [ ] rbac/security-ctx
   - [ ] config
-  - [ ] metrics/dashboard
+  - [ ] metrics
+  - [ ] dashboard
 
-- [x] tempo
+- [x] ~~tempo~~
   - [x] kustomize
   - [x] manifests
   - [x] labels
@@ -84,20 +89,22 @@
   - [x] affinity/tolerations
   - [x] rbac/security-ctx
   - [x] config
-  - [x] metrics/dashboard
+  - [x] metrics
+  - [x] dashboard
 
-- [ ] jaeger
-  - [ ] kustomize
+- [x] ~~jaeger~~
+  - [x] kustomize
   - [x] manifests
-  - [ ] labels
+  - [x] labels
   - [x] resources
   - [x] storage
   - [x] affinity/tolerations
   - [x] rbac/security-ctx
-  - [ ] config
-  - [ ] metrics/dashboard
+  - [x] config
+  - [x] metrics
+  - [x] dashboard
 
-- [x] grafana
+- [x] ~~grafana~~
   - [x] kustomize
   - [x] manifests
   - [x] labels
@@ -109,12 +116,13 @@
   - [x] dashboards
 
 - [ ] kubemq
-  - [ ] kustomize
-  - [ ] manifests
-  - [ ] labels
+  - [x] kustomize
+  - [x] manifests
+  - [x] labels
   - [ ] resources
-  - [ ] storage
-  - [ ] affinity/tolerations
-  - [ ] rbac/security-ctx
+  - [x] storage
+  - [x] affinity/tolerations
+  - [x] rbac/security-ctx
   - [ ] config
-  - [ ] metrics/dashboard
+  - [ ] metrics
+  - [x] dashboard

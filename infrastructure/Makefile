@@ -16,7 +16,7 @@ deploy-ns :		## Deploy namespaces
 	kustomize build 10_namespaces/ | kubectl apply -f -
 
 deploy-prom :		## Deploy Prometheus
-	kustomize build 20_prometheus/ | kubectl apply -f -
+	cd 20_prometheus && make deploy-all
 
 deploy-loki :		## Deploy Loki
 	kustomize build 30_loki/ | kubectl apply -f -
@@ -28,7 +28,7 @@ deploy-loki :		## Deploy Loki
 # 	kustomize build 31_vector/ | kubectl apply -f -
 
 deploy-jaeger :		## Deploy Jaeger
-	kustomize build 40_jaeger/ | kubectl apply -f -
+	cd 40_jaeger && make deploy-all
 
 deploy-tempo :		## Deploy Tempo
 	kustomize build 40_tempo/ | kubectl apply -f -
@@ -36,8 +36,8 @@ deploy-tempo :		## Deploy Tempo
 deploy-grafana :		## Deploy Grafana
 	kustomize build 50_grafana/ | kubectl apply -f -
 
-# deploy-kubemq :		## Deploy KubeMQ
-# 	kustomize build 100_kubemq/ | kubectl apply -f -
+deploy-kubemq :		## Deploy KubeMQ
+	cd 100_kubemq && make deploy-all
 
 deploy-all : deploy-ns deploy-prom deploy-loki deploy-jaeger deploy-grafana		## Deploy all infrastructure
 
@@ -48,7 +48,7 @@ delete-ns :		## Delete namespaces
 	kustomize build 10_namespaces/ | kubectl delete -f -
 
 delete-prom :		## Delete Prometheus
-	kustomize build 20_prometheus/ | kubectl delete -f -
+	cd 20_prometheus && make delete-all
 
 delete-loki :		## Delete Loki
 	kustomize build 30_loki/ | kubectl delete -f -
@@ -60,7 +60,7 @@ delete-loki :		## Delete Loki
 # 	kustomize build 31_vector/ | kubectl delete -f -
 
 delete-jaeger :		## Delete Jaeger
-	kustomize build 40_jaeger/ | kubectl delete -f -
+	cd 40_jaeger && make delete-all
 
 delete-tempo :		## Delete Tempo
 	kustomize build 40_tempo/ | kubectl delete -f -
@@ -68,11 +68,11 @@ delete-tempo :		## Delete Tempo
 delete-grafana :		## Delete Grafana
 	kustomize build 50_grafana/ | kubectl delete -f -
 
-# delete-kubemq :		## Delete KubeMQ
-# 	kustomize build 100_kubemq/ | kubectl delete -f -
+delete-kubemq :		## Delete KubeMQ
+	cd 100_kubemq && make delete-all
 
 delete-all : delete-grafana delete-jaeger delete-loki delete-prom		## Delete all infrastructure
-	sleep 30
+	sleep 60
 	@make delete-ns
 
 

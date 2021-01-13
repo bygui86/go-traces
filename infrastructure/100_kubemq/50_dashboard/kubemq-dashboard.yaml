@@ -1,0 +1,7 @@
+
+apiVersion: core.k8s.kubemq.io/v1alpha1
+kind: KubemqDashboard
+metadata:
+  name: kubemq-dashboard
+spec:
+  port: 32000

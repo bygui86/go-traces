@@ -1,0 +1,14 @@
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - jaegers.yaml
+
+commonLabels:
+  app: jaeger-operator
+  domain: tracing
+  group: crds
+
+commonAnnotations:
+  version: "1.21.2"

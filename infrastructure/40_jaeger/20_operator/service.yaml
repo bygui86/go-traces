@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-operator
+spec:
+  selector:
+    app: jaeger-operator
+  ports:
+    - name: http-metrics
+      port: 8383
+      targetPort: http-metrics
+    - name: cr-metrics
+      port: 8686
+      targetPort: cr-metrics

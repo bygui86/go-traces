@@ -5,15 +5,6 @@ metadata:
 rules:
 
   - apiGroups:
-      - policy
-    resources:
-      - podsecuritypolicies
-    verbs:
-      - use
-    resourceNames:
-      - sbt-restricted
-
-  - apiGroups:
       - authentication.k8s.io
     resources:
       - tokenreviews

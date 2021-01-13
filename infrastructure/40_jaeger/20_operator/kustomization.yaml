@@ -1,0 +1,25 @@
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: tracing
+
+resources:
+  - service_account.yaml
+  - cluster_role.yaml
+  - cluster_role_binding.yaml
+  - role.yaml
+  - role_binding.yaml
+  - deployment.yaml
+  - service.yaml
+  # - svc-monitor.yaml
+
+commonLabels:
+  app: jaeger-operator
+  domain: tracing
+  group: operators
+  feature: jaeger
+  component: controller
+
+commonAnnotations:
+  version: "1.21.2"

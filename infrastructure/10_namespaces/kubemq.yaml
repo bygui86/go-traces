@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubemq
+  labels:
+    name: kubemq
+    domain: brokers
+  annotations:
+    description: "Namespace for KubeMQ"

@@ -21,13 +21,13 @@ spec:
       containers:
         - name: prometheus-operator
           # v0.44.0
-          image: quay.io/prometheus-operator/prometheus-operator@sha256:983627001c89bc6d7d881939c0c314c72ee26256004e8890c9e31efc498d7649
+          image: quay.io/prometheus-operator/prometheus-operator:v0.44.0@sha256:983627001c89bc6d7d881939c0c314c72ee26256004e8890c9e31efc498d7649
           imagePullPolicy: IfNotPresent
           args:
             - -log-format=json
             - --kubelet-service=kube-system/kubelet
             # v0.44.0
-            - --prometheus-config-reloader=quay.io/prometheus-operator/prometheus-config-reloader@sha256:6659cb3d97b5f846b5e1651ca1ab95189509f899713c727143f1bc50cc6e57cf
+            - --prometheus-config-reloader=quay.io/prometheus-operator/prometheus-config-reloader:v0.44.0@sha256:6659cb3d97b5f846b5e1651ca1ab95189509f899713c727143f1bc50cc6e57cf
           ports:
             - name: http
               containerPort: 8080
@@ -59,7 +59,7 @@ spec:
             failureThreshold: 3
         - name: kube-rbac-proxy
           # v0.8.0
-          image: quay.io/brancz/kube-rbac-proxy@sha256:f5a13092303d1888a1b05b24a8ec15059561c266dd2b35a0be1e92e4d39ac926
+          image: quay.io/brancz/kube-rbac-proxy:v0.8.0@sha256:f5a13092303d1888a1b05b24a8ec15059561c266dd2b35a0be1e92e4d39ac926
           imagePullPolicy: IfNotPresent
           args:
             - --logtostderr
@@ -77,19 +77,3 @@ spec:
             limits:
               cpu: 20m
               memory: 40Mi
-      nodeSelector:
-        beta.kubernetes.io/os: linux
-      tolerations:
-        - key: dedicated
-          operator: Equal
-          value: monitoring
-          effect: NoSchedule
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: dedicated
-                    operator: In
-                    values:
-                      - monitoring

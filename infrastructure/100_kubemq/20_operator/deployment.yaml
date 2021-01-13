@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubemq-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubemq-operator
+  template:
+    metadata:
+      labels:
+        app: kubemq-operator
+    spec:
+      serviceAccountName: kubemq-operator
+      containers:
+        - name: kubemq-operator
+          image: kubemq/kubemq-operator:v1.4.0@sha256:6b8680bb34b335f0c5653bc38a4d1be174a91846176b1336ac166e32158b42c9
+          imagePullPolicy: IfNotPresent
+          command:
+            - kubemq-operator
+          envFrom:
+            - configMapRef:
+                name: kubemq-operator
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64M
+            limits:
+              cpu: 200m
+              memory: 128M
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: metrics
+              containerPort: 8090
+          # MISSING
+          # liveness
+          # readiness

@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: jaeger-operator
+spec:
+  selector:
+    matchLabels:
+      app: jaeger-operator
+  namespaceSelector:
+    matchNames:
+      - tracing
+  endpoints:
+    - port: http-metrics
+      interval: 15s
+      scrapeTimeout: 14s
+    - port: cr-metrics
+      interval: 15s
+      scrapeTimeout: 14s
