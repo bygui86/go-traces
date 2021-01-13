@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-client
+  template:
+    metadata:
+      labels:
+        app: http-client
+    spec:
+      terminationGracePeriodSeconds: 15
+      containers:
+        - name: http-client
+          image: bygui86/http-client:v1.0.0@sha256:ece6a68db394499191d70e9de8789b9d6cc59ad3b4b13c92cc777396902808de
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: http-client
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: metrics
+              containerPort: 9090
+            # - name: probes
+            #   containerPort: 9091
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          # livenessProbe:
+          #   httpGet:
+          #     path: /live
+          #     port: probes
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 5
+          #   timeoutSeconds: 3
+          #   successThreshold: 1
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /ready
+          #     port: probes
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          #   timeoutSeconds: 3
+          #   successThreshold: 1
+          #   failureThreshold: 3

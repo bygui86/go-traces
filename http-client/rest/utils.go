@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
@@ -22,9 +23,10 @@ const (
 
 	// headers
 	// keys
-	headerContentType = "Content-Type"
-	headerAccept      = "Accept"
-	headerUserAgent   = "User-Agent"
+	headerContentType  = "Content-Type"
+	headerAccept       = "Accept"
+	headerUserAgent    = "User-Agent"
+	headerCustomSource = "Custom-Source"
 	// values
 	headerUserAgentClient = "GoTracesHttpClient/1.0"
 	headerApplicationJson = "application/json"
@@ -52,6 +54,8 @@ func (s *Server) setupRouter() {
 	logging.Log.Debug("Create new router")
 
 	s.router = mux.NewRouter().StrictSlash(true)
+
+	s.router.Use(requestInfoPrintingMiddleware)
 
 	s.router.HandleFunc(rootProductsEndpoint, s.getProducts).Methods(http.MethodGet)
 	s.router.HandleFunc(productsIdEndpoint, s.getProduct).Methods(http.MethodGet)
@@ -84,9 +88,9 @@ func sendJsonResponse(writer http.ResponseWriter, code int, payload interface{})
 	response, _ := json.Marshal(payload)
 	writer.Header().Set(headerContentType, headerApplicationJson)
 	writer.WriteHeader(code)
-	_, err := writer.Write(response)
-	if err != nil {
-		logging.SugaredLog.Errorf("Error sending JSON response: %s", err.Error())
+	_, writeErr := writer.Write(response)
+	if writeErr != nil {
+		logging.SugaredLog.Errorf("Error sending JSON response: %s", writeErr.Error())
 	}
 }
 
@@ -99,4 +103,37 @@ func closeBody(body io.ReadCloser) {
 	if err != nil {
 		logging.SugaredLog.Errorf("Closing request body failed: %s", err.Error())
 	}
+}
+
+// OTHERS
+
+func (s *Server) setRequestHeaders(restRequest *http.Request) {
+	restRequest.Header.Set(headerAccept, headerApplicationJson)
+	restRequest.Header.Set(headerUserAgent, headerUserAgentClient)
+	ip, ipErr := getPublicIp()
+	if ipErr != nil {
+		logging.SugaredLog.Errorf("Get public IP address failed: %s", ipErr.Error())
+	} else {
+		restRequest.Header.Set(headerCustomSource, ip)
+	}
+}
+
+func getPublicIp() (string, error) {
+	url := "https://api.ipify.org?format=text"
+	logging.SugaredLog.Infof("Get public IP address from %s", url)
+
+	response, respErr := http.Get(url)
+	if respErr != nil {
+		return "", respErr
+	}
+	defer closeBody(response.Body)
+
+	ip, bodyErr := ioutil.ReadAll(response.Body)
+	if bodyErr != nil {
+		return "", bodyErr
+	}
+
+	logging.SugaredLog.Infof("Public IP '%s' will be added as 'Custom-Source' header", ip)
+
+	return string(ip), nil
 }

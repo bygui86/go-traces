@@ -37,8 +37,7 @@ func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) 
 		span.LogKV("products-found", 0, "error", errMsg)
 		return
 	}
-	restRequest.Header.Set(headerAccept, headerApplicationJson)
-	restRequest.Header.Set(headerUserAgent, headerUserAgentClient)
+	s.setRequestHeaders(restRequest)
 
 	// Transmit the span's TraceContext as HTTP headers on our outbound request.
 	traceErr := opentracing.GlobalTracer().Inject(
@@ -120,8 +119,7 @@ func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
 		span.LogKV("product-id", id, "product-found", false, "error", errMsg)
 		return
 	}
-	restRequest.Header.Set(headerAccept, headerApplicationJson)
-	restRequest.Header.Set(headerUserAgent, headerUserAgentClient)
+	s.setRequestHeaders(restRequest)
 
 	// Transmit the span's TraceContext as HTTP headers on our outbound request.
 	traceErr := opentracing.GlobalTracer().Inject(
@@ -207,8 +205,7 @@ func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request
 		span.LogKV("product-created", false, "error", errMsg)
 		return
 	}
-	restRequest.Header.Set(headerAccept, headerApplicationJson)
-	restRequest.Header.Set(headerUserAgent, headerUserAgentClient)
+	s.setRequestHeaders(restRequest)
 
 	// Transmit the span's TraceContext as HTTP headers on our outbound request.
 	traceErr := opentracing.GlobalTracer().Inject(
@@ -307,8 +304,7 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 		span.LogKV("product-updated", false, "error", errMsg)
 		return
 	}
-	restRequest.Header.Set(headerAccept, headerApplicationJson)
-	restRequest.Header.Set(headerUserAgent, headerUserAgentClient)
+	s.setRequestHeaders(restRequest)
 
 	// Transmit the span's TraceContext as HTTP headers on our outbound request.
 	traceErr := opentracing.GlobalTracer().Inject(
@@ -393,8 +389,7 @@ func (s *Server) deleteProduct(writer http.ResponseWriter, request *http.Request
 		span.LogKV("product-deleted", false, "error", errMsg)
 		return
 	}
-	restRequest.Header.Set(headerAccept, headerApplicationJson)
-	restRequest.Header.Set(headerUserAgent, headerUserAgentClient)
+	s.setRequestHeaders(restRequest)
 
 	// Transmit the span's TraceContext as HTTP headers on our outbound request.
 	traceErr := opentracing.GlobalTracer().Inject(
