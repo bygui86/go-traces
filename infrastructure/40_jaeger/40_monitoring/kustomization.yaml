@@ -5,15 +5,13 @@ kind: Kustomization
 namespace: tracing
 
 resources:
-  - jaeger_all-in-one.yaml
-  # - jaeger_simple.yaml
-  # - no-headless-service.yaml
+  - metrics-service.yaml
+  - svc-monitor.yaml
 
 commonLabels:
   app: jaeger
   domain: tracing
-  feature: jaeger
-  component: jaeger
+  component: monitoring
 
 commonAnnotations:
   version: "1.21.0"

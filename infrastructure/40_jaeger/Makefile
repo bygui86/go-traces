@@ -21,7 +21,10 @@ deploy-operator :		## Deploy Jaeger Operator
 deploy-jaeger :		## Deploy Jaeger
 	kustomize build 30_jaeger/ | kubectl apply -f -
 
-deploy-all : deploy-crds deploy-operator deploy-jaeger		## Deploy whole Jaeger environment
+deploy-monitor :		## Deploy Jaeger monitoring
+	kustomize build 40_monitoring/ | kubectl apply -f -
+
+deploy-all : deploy-crds deploy-operator deploy-jaeger deploy-monitor		## Deploy whole Jaeger environment
 
 
 ## delete
@@ -35,7 +38,10 @@ delete-operator :		## Delete Jaeger Operator
 delete-jaeger :		## Delete Jaeger
 	kustomize build 30_jaeger/ | kubectl delete -f -
 
-delete-all : delete-jaeger delete-operator delete-crds		## Delete whole Jaeger environment
+delete-monitor :		## Delete Jaeger monitoring
+	kustomize build 40_monitoring/ | kubectl delete -f -
+
+delete-all : delete-monitor delete-jaeger delete-operator delete-crds		## Delete whole Jaeger environment
 
 
 ## ops

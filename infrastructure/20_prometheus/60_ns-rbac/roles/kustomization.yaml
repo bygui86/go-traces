@@ -6,5 +6,6 @@ resources:
   - apps.yaml
   - default.yaml
   - kube-system.yaml
+  - kubemq.yaml
   - logging.yaml
   - tracing.yaml

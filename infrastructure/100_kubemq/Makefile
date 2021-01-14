@@ -27,7 +27,10 @@ deploy-conn :		## Deploy KubeMQ connectors
 deploy-dash :		## Deploy KubeMQ dashboard
 	kustomize build 50_dashboard/ | kubectl apply -f -
 
-deploy-all : deploy-crds deploy-operator deploy-cluster		## Deploy whole KubeMQ environment
+deploy-monitor :		## Deploy KubeMQ monitoring
+	kustomize build 60_monitoring/ | kubectl apply -f -
+
+deploy-all : deploy-crds deploy-operator deploy-cluster deploy-monitor		## Deploy whole KubeMQ environment
 
 
 ## delete
@@ -47,7 +50,10 @@ delete-conn :		## Delete KubeMQ connectors
 delete-dash :		## Delete KubeMQ dashboard
 	kustomize build 50_dashboard/ | kubectl delete -f -
 
-delete-all : delete-cluster delete-operator delete-crds		## Delete whole KubeMQ environment
+delete-monitor :		## Delete KubeMQ monitoring
+	kustomize build 60_monitoring/ | kubectl delete -f -
+
+delete-all : delete-monitor delete-cluster delete-operator delete-crds		## Delete whole KubeMQ environment
 
 
 ## ops

@@ -12,7 +12,7 @@ resources:
   - role_binding.yaml
   - deployment.yaml
   - service.yaml
-  # - svc-monitor.yaml
+  - svc-monitor.yaml
 
 commonLabels:
   app: jaeger-operator

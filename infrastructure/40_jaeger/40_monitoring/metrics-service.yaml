@@ -4,6 +4,8 @@ metadata:
   name: jaeger-metrics
   labels:
     app: jaeger
+    domain: tracing
+    component: monitoring
     # app.kubernetes.io/component: service-agent
     # app.kubernetes.io/instance: jaeger
     # app.kubernetes.io/managed-by: jaeger-operator
@@ -12,6 +14,8 @@ metadata:
 spec:
   selector:
     app: jaeger
+    domain: tracing
+    component: monitoring
     # app.kubernetes.io/component: jaeger
     # app.kubernetes.io/instance: jaeger
     # app.kubernetes.io/managed-by: jaeger-operator

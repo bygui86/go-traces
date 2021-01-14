@@ -6,6 +6,8 @@ spec:
   selector:
     matchLabels:
       app: jaeger
+      domain: tracing
+      component: monitoring
   namespaceSelector:
     matchNames:
       - tracing

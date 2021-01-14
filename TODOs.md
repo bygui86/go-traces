@@ -1,6 +1,11 @@
 
 # TODOs
 
+## BUGs
+
+- [ ] jaeger service monitor not visible in prom/targets
+- [ ] grpc-apps scrape failing
+
 ## Apps
 
 | App             | code | metrics | logs | traces | dockerfile | k8s manifests | k8s probes | status |
@@ -17,7 +22,7 @@
 | kafka-producer  | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
 | kafka-consumer  | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
 
-### Specific
+### Special tasks
 
 - [x] ~~split http-server into in-memory-db and db~~
 - [ ] add k8s probes on each app
@@ -115,14 +120,14 @@
   - [x] config
   - [x] dashboards
 
-- [ ] kubemq
+- [x] ~~kubemq~~
   - [x] kustomize
   - [x] manifests
   - [x] labels
-  - [ ] resources
+  - [x] resources
   - [x] storage
   - [x] affinity/tolerations
   - [x] rbac/security-ctx
-  - [ ] config
-  - [ ] metrics
+  - [x] config
+  - [x] metrics
   - [x] dashboard

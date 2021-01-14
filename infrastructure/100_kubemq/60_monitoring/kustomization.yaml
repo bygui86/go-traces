@@ -5,12 +5,13 @@ kind: Kustomization
 namespace: kubemq
 
 resources:
-  - kubemq-cluster.yaml
+  # - prom-rules.yaml
+  - svc-monitor.yaml
 
 commonLabels:
   app: kubemq
   domain: brokers
-  component: cluster
+  component: monitoring
 
 commonAnnotations:
   version: "v2.2.0"

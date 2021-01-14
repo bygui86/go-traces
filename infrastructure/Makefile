@@ -76,6 +76,18 @@ delete-all : delete-grafana delete-jaeger delete-loki delete-prom		## Delete all
 	@make delete-ns
 
 
+## ops
+
+port-forw-graf :		## Open port forwarding to Grafana
+	@kubectl port-forward svc/grafana 3000 -n monitoring
+
+port-forw-prom :		## Open port forwarding to Prometheus
+	@kubectl port-forward svc/prometheus 9090 -n monitoring
+
+port-forw-jaeger :		## Open port forwarding to Jaeger
+	@kubectl port-forward svc/jaeger-query 16686 -n tracing
+
+
 ## helpers
 
 help :		## Help
