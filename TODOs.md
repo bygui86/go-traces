@@ -1,65 +1,56 @@
 
 # TODOs
 
-## BUGs
+## Goals
 
-- [ ] jaeger service monitor not visible in prom/targets
-- [ ] grpc-apps scrape failing
+- [ ] tracing
+  - [x] ~~send traces to jaeger~~
+  - [ ] send traces to tempo
+  - [x] ~~see traces in jaeger~~
+  - [ ] see traces in tempo
+  - [x] ~~see traces in grafana from jaeger~~
+  - [ ] see traces in grafana from tempo
+  - [x] ~~jaeger grafana dashboard~~
+  - [ ] tempo grafana dashboard
+- [ ] logging
+  - [ ] send logs to loki using promtail
+  - [ ] send logs to loki using vector
+  - [ ] see logs in grafana from loki
+- [x] ~~monitoring~~
+  - [x] ~~send metrics to prometheus~~
+  - [x] ~~see metrics in grafana from prometheus~~
+- [ ] brokers
+  - [x] ~~deploy kubemq~~
+  - [x] ~~scrape kubemq metrics~~
+  - [ ] kubemq grafana dashboard
+- [ ] integrations
+  - [ ] `integrate traces (from jaeger and/or tempo) and logs (from loki) in grafana`
 
 ## Apps
 
 | App             | code | metrics | logs | traces | dockerfile | k8s manifests | k8s probes | status |
 |-----------------|------|---------|------|--------|------------|---------------|------------|--------|
 | standalone      | ok   | todo    | todo | ok     | ok         | ok            | todo       | ready  |
-| grpc-protobuf   | ok   | -       | -    | -      | -          | -             | -          | ready  |
 | grpc-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | grpc-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | http-server-db  | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | http-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 | http-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
-| kubemq-producer | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
-| kubemq-consumer | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
-| kafka-producer  | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
-| kafka-consumer  | ok   | ok      | ok   | ok     | todo       | todo          | todo       | wip    |
+| kubemq-producer | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| kubemq-consumer | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| kafka-producer  | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| kafka-consumer  | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
 
 ### Special tasks
 
 - [x] ~~split http-server into in-memory-db and db~~
+- [x] ~~replace all `host = locahost` with `host = 0.0.0.0` as default config~~
 - [ ] add k8s probes on each app
-- [ ] replace all `host = locahost` with `host = 0.0.0.0` as default config 
 
 ## Infrastructure
 
-- [x] ~~makefile~~
-
-- [x] ~~namespaces~~
-  - [x] kustomize
-  - [x] manifests
-  - [x] labels
-
-- [x] ~~prometheus~~
-  - [x] kustomize
-  - [x] manifests
-  - [x] labels
-  - [x] resources
-  - [x] storage
-  - [x] affinity/tolerations
-  - [x] rbac/security-ctx
-  - [x] config
-  - [x] metrics
-  - [x] dashboard
-
-- [x] ~~loki~~
-  - [x] kustomize
-  - [x] manifests
-  - [x] labels
-  - [x] resources
-  - [x] storage
-  - [x] affinity/tolerations
-  - [x] rbac/security-ctx
-  - [x] config
-  - [x] metrics
-  - [x] dashboard
+- [ ] kubemq
+  - [ ] grafana dashboard
 
 - [ ] promtail
   - [ ] kustomize
@@ -70,8 +61,8 @@
   - [ ] affinity/tolerations
   - [ ] rbac/security-ctx
   - [ ] config
-  - [ ] metrics
-  - [ ] dashboard
+  - [ ] prometheus metrics
+  - [ ] grafana dashboard
 
 - [ ] vector
   - [ ] kustomize
@@ -82,52 +73,15 @@
   - [ ] affinity/tolerations
   - [ ] rbac/security-ctx
   - [ ] config
-  - [ ] metrics
-  - [ ] dashboard
+  - [ ] prometheus metrics
+  - [ ] grafana dashboard
 
-- [x] ~~tempo~~
-  - [x] kustomize
-  - [x] manifests
-  - [x] labels
-  - [x] resources
-  - [x] storage
-  - [x] affinity/tolerations
-  - [x] rbac/security-ctx
-  - [x] config
-  - [x] metrics
-  - [x] dashboard
+- [ ] loki + grafana
+  - [ ] config traces integration with jaeger
+  - [ ] config traces integration with tempo
 
-- [x] ~~jaeger~~
-  - [x] kustomize
-  - [x] manifests
-  - [x] labels
-  - [x] resources
-  - [x] storage
-  - [x] affinity/tolerations
-  - [x] rbac/security-ctx
-  - [x] config
-  - [x] metrics
-  - [x] dashboard
-
-- [x] ~~grafana~~
-  - [x] kustomize
-  - [x] manifests
-  - [x] labels
-  - [x] resources
-  - [x] storage
-  - [x] affinity/tolerations
-  - [x] rbac/security-ctx
-  - [x] config
-  - [x] dashboards
-
-- [x] ~~kubemq~~
-  - [x] kustomize
-  - [x] manifests
-  - [x] labels
-  - [x] resources
-  - [x] storage
-  - [x] affinity/tolerations
-  - [x] rbac/security-ctx
-  - [x] config
-  - [x] metrics
-  - [x] dashboard
+- [ ] tempo
+  - [ ] retry sending traces to tempo
+  - [ ] integration with grafana
+  - [ ] integration with loki
+  - [ ] grafana dashboards check
