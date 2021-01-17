@@ -44,7 +44,7 @@ __check-container-tag :
 	@[ "$(CONTAINER_TAG)" ] || ( echo "Missing container tag (CONTAINER_TAG), please define it and retry"; exit 1 )
 
 container-build : __check-container-tag		## Build container
-	docker build . -t bygui86/grpc-client:$(CONTAINER_TAG)
+	docker build . -t bygui86/grpc-client:$(CONTAINER_TAG) --no-cache
 
 container-push : __check-container-tag		## Push container to Docker hub
 	docker push bygui86/grpc-client:$(CONTAINER_TAG)

@@ -15,10 +15,10 @@ data:
   JAEGER_REPORTER_FLUSH_INTERVAL: 1s
   JAEGER_AGENT_PORT: "6831"
   ## grafana-tempo
-  JAEGER_AGENT_HOST: tempo.tracing.svc.cluster.local
+  # JAEGER_AGENT_HOST: tempo.tracing.svc.cluster.local
   ## jaeger
   ### agent
-  # JAEGER_AGENT_HOST: jaeger-agent.tracing.svc.cluster.local
+  JAEGER_AGENT_HOST: jaeger-agent.tracing.svc.cluster.local
   ### bypass agent, directly to collector
   # JAEGER_ENDPOINT: http://jaeger-collector.tracing.svc.cluster.local:14268/api/traces
 

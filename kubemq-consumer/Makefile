@@ -12,15 +12,18 @@ export GO111MODULE = on
 
 ## infra
 
-run-kubemq :		## Run Minikube and deploy KubeMQ
-	minikube start --vm-driver=hyperkit --cpus=4 --memory=8192 --disk-size=20g --enable-default-cni --network-plugin=cni --extra-config=kubelet.network-plugin=cni
+start-minikube-with-kubemq :		## Start Minikube and deploy KubeMQ
+	minikube start --vm-driver=docker --cpus=4 --memory=8192 --disk-size=20g -p kubemq
 	@sleep 30s
 	kubectl apply -f https://get.kubemq.io/deploy
 	@sleep 30s
 	kubectl get kubemqclusters,kubemqdashboards -n kubemq
 
-stop-kubemq :		## Stop Minikube and KubeMQ
-	minikube stop
+stop-minikube :		## Stop Minikube and KubeMQ
+	minikube stop -p kubemq
+
+delete-minikube :		## Stop Minikube and KubeMQ
+	minikube delete -p kubemq
 
 proxy-kubemq :		## Proxy KubeMQ
 	kubemqctl set cluster proxy
@@ -44,7 +47,7 @@ __check-container-tag :
 	@[ "$(CONTAINER_TAG)" ] || ( echo "Missing container tag (CONTAINER_TAG), please define it and retry"; exit 1 )
 
 container-build : __check-container-tag		## Build container
-	docker build . -t bygui86/kubemq-consumer:$(CONTAINER_TAG)
+	docker build . -t bygui86/kubemq-consumer:$(CONTAINER_TAG) --no-cache
 
 container-push : __check-container-tag		## Push container to Docker hub
 	docker push bygui86/kubemq-consumer:$(CONTAINER_TAG)
