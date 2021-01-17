@@ -29,9 +29,3 @@ data:
   DB_USERNAME: postgres
   DB_PASSWORD: supersecret
   DB_NAME: postgres
-
-  # http
-  REST_HOST: "0.0.0.0"
-
-  # monitoring
-  MONITOR_HOST: "0.0.0.0"

@@ -21,9 +21,3 @@ data:
   JAEGER_AGENT_HOST: jaeger-agent.tracing.svc.cluster.local
   ### bypass agent, directly to collector
   # JAEGER_ENDPOINT: http://jaeger-collector.tracing.svc.cluster.local:14268/api/traces
-
-  # http
-  REST_HOST: "0.0.0.0"
-
-  # monitoring
-  MONITOR_HOST: "0.0.0.0"

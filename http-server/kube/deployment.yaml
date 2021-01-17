@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 15
       containers:
         - name: http-server
-          image: bygui86/http-server:v1.0.0@sha256:5c4aefdea2c002be652c3c027776bdd677da97c635c0d2cecf6c88473a3ec033
+          image: bygui86/http-server:v1.0.0
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

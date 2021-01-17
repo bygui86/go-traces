@@ -11,18 +11,18 @@ const (
 	restHostEnvVar       = "REST_HOST"
 	restPortEnvVar       = "REST_PORT"
 
-	restServerHostEnvVarDefault = "localhost"
-	restServerPortEnvVarDefault = 8080
-	restHostEnvVarDefault       = "localhost"
-	restPortEnvVarDefault       = 8080
+	restServerHostDefault = "localhost"
+	restServerPortDefault = 8080
+	restHostDefault       = "0.0.0.0"
+	restPortDefault       = 8080
 )
 
 func loadConfig() *config {
 	logging.Log.Debug("Load REST configurations")
 	return &config{
-		restServerHost: utils.GetStringEnv(restServerHostEnvVar, restServerHostEnvVarDefault),
-		restServerPort: utils.GetIntEnv(restServerPortEnvVar, restServerPortEnvVarDefault),
-		restHost:       utils.GetStringEnv(restHostEnvVar, restHostEnvVarDefault),
-		restPort:       utils.GetIntEnv(restPortEnvVar, restPortEnvVarDefault),
+		restServerHost: utils.GetStringEnv(restServerHostEnvVar, restServerHostDefault),
+		restServerPort: utils.GetIntEnv(restServerPortEnvVar, restServerPortDefault),
+		restHost:       utils.GetStringEnv(restHostEnvVar, restHostDefault),
+		restPort:       utils.GetIntEnv(restPortEnvVar, restPortDefault),
 	}
 }

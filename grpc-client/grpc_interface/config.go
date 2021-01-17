@@ -13,7 +13,7 @@ const (
 	greetingNameEnvVar      = "GRPC_GREETING_NAME"
 	greetingIntervalEnvVar  = "GRPC_GREETING_INTERVAL" // in seconds
 
-	serverAddressDefault     = "0.0.0.0:50051"
+	serverAddressDefault     = "localhost:50051"
 	connectionTimeoutDefault = 2
 	greetingNameDefault      = "ANONYMOUS"
 	greetingIntervalDefault  = 1

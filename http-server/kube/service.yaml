@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: http-server
 spec:
-  type: LoadBalancer
   selector:
     app: http-server
   ports:
