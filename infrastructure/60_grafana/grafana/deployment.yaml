@@ -22,7 +22,9 @@ spec:
       containers:
         - name: grafana
           # 7.3.4
-          image: grafana/grafana:7.3.4@sha256:6d42886b3ebe286b92eca592e1251b5dc128e611678ccffbefb5701bbf7ef186
+          # image: grafana/grafana:7.3.4@sha256:6d42886b3ebe286b92eca592e1251b5dc128e611678ccffbefb5701bbf7ef186
+          # 7.3.7
+          image: grafana/grafana:7.3.7@sha256:5f19b6c385e8bfb8e5c9ecc7cdd123a453af3cf01e7c20d20059e770f656286d
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -185,9 +187,9 @@ spec:
               subPath: kubemq.json
               name: grafana-dashboard-kubemq
             ### tracing
-            - mountPath: /etc/dashboards/tracing/jaeger.json
-              subPath: jaeger.json
-              name: grafana-dashboard-jaeger
+            - mountPath: /etc/dashboards/tracing/jaeger-all-in-one.json
+              subPath: jaeger-all-in-one.json
+              name: grafana-dashboard-jaeger-all-in-one
             - mountPath: /etc/dashboards/tracing/tempo-operational.json
               subPath: tempo-operational.json
               name: grafana-dashboard-tempo-operational
@@ -200,6 +202,13 @@ spec:
             - mountPath: /etc/dashboards/tracing/tempo-writes.json
               subPath: tempo-writes.json
               name: grafana-dashboard-tempo-writes
+            ## services
+            - mountPath: /etc/dashboards/services/go-services.json
+              subPath: go-services.json
+              name: grafana-dashboard-go-services
+            - mountPath: /etc/dashboards/services/global-status.json
+              subPath: global-status.json
+              name: grafana-dashboard-global-status
 
       volumes:
         # storage
@@ -333,8 +342,8 @@ spec:
           name: grafana-dashboard-kubemq
         ### tracing
         - configMap:
-            name: grafana-dashboard-jaeger
-          name: grafana-dashboard-jaeger
+            name: grafana-dashboard-jaeger-all-in-one
+          name: grafana-dashboard-jaeger-all-in-one
         - configMap:
             name: grafana-dashboard-tempo-operational
           name: grafana-dashboard-tempo-operational
@@ -347,3 +356,10 @@ spec:
         - configMap:
             name: grafana-dashboard-tempo-writes
           name: grafana-dashboard-tempo-writes
+        ## services
+        - configMap:
+            name: grafana-dashboard-go-services
+          name: grafana-dashboard-go-services
+        - configMap:
+            name: grafana-dashboard-global-status
+          name: grafana-dashboard-global-status

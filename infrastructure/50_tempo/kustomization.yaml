@@ -5,13 +5,15 @@ kind: Kustomization
 namespace: tracing
 
 resources:
-  - metrics-service.yaml
+  - configmap.yaml
+  - statefulset.yaml
+  - service.yaml
   - svc-monitor.yaml
 
 commonLabels:
-  app: jaeger
+  app: tempo
   domain: tracing
-  component: monitoring
+  group: tempo
 
 commonAnnotations:
-  version: "1.21.0"
+  version: "0.4.0"

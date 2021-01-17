@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reloader
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: reloader
+  template:
+    metadata:
+      labels:
+        app: reloader
+    spec:
+      serviceAccountName: reloader
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      containers:
+        - name: reloader
+          image: stakater/reloader:v0.0.76@sha256:49c3864599cac3779c16fb794bf57acb03a5602a129f5738ab8a21be74e51713
+          imagePullPolicy: IfNotPresent
+          # args:
+          #   - --log-format=json
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          ports:
+            - name: http
+              containerPort: 9090
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: http

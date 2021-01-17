@@ -7,16 +7,10 @@ resources:
   - kubernetes/
   - logging/
   - monitoring/
+  - services/
   - tracing/
 
 namePrefix: grafana-dashboard-
 
 commonLabels:
-  app: grafana
-  domain: monitoring
-  group: dashboards
-  feature: grafana
   component: dashboard
-
-commonAnnotations:
-  grafanaVersion: "7.3.4"

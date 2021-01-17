@@ -7,3 +7,12 @@ namespace: monitoring
 resources:
   - dashboards/
   - grafana/
+
+commonLabels:
+  app: grafana
+  domain: monitoring
+  group: dashboards
+  feature: grafana
+
+commonAnnotations:
+  version: "7.3.7"

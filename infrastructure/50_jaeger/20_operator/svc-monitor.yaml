@@ -1,15 +1,18 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: kubemq-cluster
+  name: jaeger-operator
 spec:
   selector:
     matchLabels:
-      app: kubemq-cluster
+      app: jaeger-operator
   namespaceSelector:
     matchNames:
-      - kubemq
+      - tracing
   endpoints:
-    - port: api-port
+    - port: http-metrics
       interval: 15s
       scrapeTimeout: 14s
+    # - port: cr-metrics
+    #   interval: 15s
+    #   scrapeTimeout: 14s

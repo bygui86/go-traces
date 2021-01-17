@@ -7,4 +7,5 @@ resources:
   - kubemq.yaml
   - logging.yaml
   - monitoring.yaml
+  - reloader.yaml
   - tracing.yaml

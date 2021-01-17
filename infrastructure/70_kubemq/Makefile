@@ -29,6 +29,10 @@ deploy-dash :		## Deploy KubeMQ dashboard
 
 deploy-monitor :		## Deploy KubeMQ monitoring
 	kustomize build 60_monitoring/ | kubectl apply -f -
+	kubectl label svc kubemq-cluster headless="true" -n kubemq
+	kubectl label svc kubemq-cluster-api feature="api" headless="false" -n kubemq
+	kubectl label svc kubemq-cluster-grpc feature="grpc" headless="false" -n kubemq
+	kubectl label svc kubemq-cluster-rest feature="rest" headless="false" -n kubemq
 
 deploy-all : deploy-crds deploy-operator deploy-cluster deploy-monitor		## Deploy whole KubeMQ environment
 

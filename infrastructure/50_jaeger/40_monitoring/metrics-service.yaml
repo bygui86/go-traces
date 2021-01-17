@@ -6,16 +6,11 @@ metadata:
     app: jaeger
     domain: tracing
     component: monitoring
-    # app.kubernetes.io/component: service-agent
-    # app.kubernetes.io/instance: jaeger
-    # app.kubernetes.io/managed-by: jaeger-operator
-    # app.kubernetes.io/name: jaeger-agent
-    # app.kubernetes.io/part-of: jaeger
 spec:
   selector:
     app: jaeger
     domain: tracing
-    component: monitoring
+    feature: jaeger
     # app.kubernetes.io/component: jaeger
     # app.kubernetes.io/instance: jaeger
     # app.kubernetes.io/managed-by: jaeger-operator
