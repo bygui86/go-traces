@@ -10,7 +10,7 @@ const (
 	kafkaPortEnvVar             = "KAFKA_PORT"
 	kafkaTopicEnvVar            = "KAFKA_TOPIC"
 
-	kafkaBootstrapServersDefault = "localhost"
+	kafkaBootstrapServersDefault = "0.0.0.0"
 	kafkaPortDefault             = 9092
 	kafkaTopicDefault            = "my-topic"
 )

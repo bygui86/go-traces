@@ -32,6 +32,30 @@ run :		## Run application from source code
 	godotenv -f local.env go run main.go
 
 
+## containerisation
+
+__check-container-tag :
+	@[ "$(CONTAINER_TAG)" ] || ( echo "Missing container tag (CONTAINER_TAG), please define it and retry"; exit 1 )
+
+container-build : __check-container-tag		## Build container
+	docker build . -t bygui86/kafka-consumer:$(CONTAINER_TAG)
+
+container-push : __check-container-tag		## Push container to Docker hub
+	docker push bygui86/kafka-consumer:$(CONTAINER_TAG)
+
+
+## kubernetes
+
+deploy :		## Deploy on Kubernetes
+	kustomize build kube/ | kubectl apply -f -
+
+delete :		## Delete from Kubernetes
+	kustomize build kube/ | kubectl delete -f -
+
+logs :		## Show logs from Kubernetes pod
+	kubectl logs -l app=kafka-consumer -n apps --tail 10000 -f
+
+
 ## helpers
 
 help :		## Help

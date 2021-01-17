@@ -85,7 +85,7 @@ func startMonitoringServer() *monitoring.Server {
 
 func initJaegerTracer() io.Closer {
 	logging.Log.Debug("Init Jaeger tracer")
-	closer, err := tracing.InitTestingJaeger(serviceName)
+	closer, err := tracing.InitTracer()
 	if err != nil {
 		logging.SugaredLog.Errorf("Jaeger tracer setup failed: %s", err.Error())
 		os.Exit(501)

@@ -12,7 +12,7 @@ const (
 	kafkaConsumerGroupEnvVar    = "KAFKA_CONSUMER_GROUP"
 	kafkaAutoOffsetResetEnvVar  = "KAFKA_AUTO_OFFSET_RESET" // earliest, latest, etc. (see https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md)
 
-	kafkaBootstrapServersDefault = "localhost"
+	kafkaBootstrapServersDefault = "0.0.0.0"
 	kafkaPortDefault             = 9092
 	kafkaConsumerGroupDefault    = "my-group"
 	kafkaAutoOffsetResetDefault  = "latest"
