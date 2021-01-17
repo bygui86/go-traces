@@ -33,7 +33,7 @@ deploy-ns-rbac :		## Deploy RBAC for all namespaces
 deploy-prom :		## Deploy Prometheus
 	kustomize build 70_prometheus/ | kubectl apply -f -
 
-deploy-all : deploy-crds deploy-operator deploy-ns-rbac deploy-prom		## Deploy whole Prometheus environment
+deploy-all : deploy-crds deploy-operator deploy-kube-state deploy-node-exp deploy-prom-adapt deploy-ns-rbac deploy-prom		## Deploy whole Prometheus environment
 
 
 ## delete
@@ -59,7 +59,7 @@ delete-ns-rbac :		## Delete RBAC for all namespaces
 delete-prom :		## Delete Prometheus
 	kustomize build 70_prometheus/ | kubectl delete -f -
 
-delete-all : delete-prom delete-ns-rbac delete-operator delete-crds		## Delete whole Prometheus environment
+delete-all : delete-prom delete-ns-rbac delete-kube-state delete-node-exp delete-prom-adapt delete-operator delete-crds		## Delete whole Prometheus environment
 
 
 ## pvc

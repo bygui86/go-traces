@@ -84,7 +84,7 @@ delete-all : delete-grafana delete-jaeger delete-loki delete-reloader delete-pro
 
 ## ops
 
-port-forw-graf :		## Open port forwarding to Grafana
+port-forw-grafana :		## Open port forwarding to Grafana
 	@kubectl port-forward svc/grafana 3000 -n monitoring
 
 port-forw-prom :		## Open port forwarding to Prometheus

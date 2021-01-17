@@ -3,28 +3,16 @@
 
 ## Goals
 
-- [ ] tracing
-  - [x] ~~send traces to jaeger~~
-  - [ ] send traces to tempo
-  - [x] ~~see traces in jaeger~~
-  - [ ] see traces in tempo
-  - [x] ~~see traces in grafana from jaeger~~
-  - [ ] see traces in grafana from tempo
-  - [x] ~~jaeger grafana dashboard~~
-  - [ ] tempo grafana dashboard
 - [ ] logging
   - [ ] send logs to loki using promtail
   - [ ] send logs to loki using vector
   - [ ] see logs in grafana from loki
-- [x] ~~monitoring~~
-  - [x] ~~send metrics to prometheus~~
-  - [x] ~~see metrics in grafana from prometheus~~
 - [ ] brokers
   - [x] ~~deploy kubemq~~
   - [x] ~~scrape kubemq metrics~~
   - [ ] kubemq grafana dashboard
 - [ ] integrations
-  - [ ] `integrate traces (from jaeger and/or tempo) and logs (from loki) in grafana`
+  - [ ] `integrate traces from jaeger and logs from loki in grafana`
 
 ## Apps
 

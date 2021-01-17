@@ -10,49 +10,97 @@
 
 # ACTIONS
 
-## global
+## K8S infra
 
-build-all :		## Build all applications
+start-minikube :		## Start Minikube
+	minikube start --vm-driver=docker --cpus=6 --memory=12288 --disk-size=30g -p go-traces
+
+stop-minikube :		## Stop Minikube
+	minikube stop -p go-traces
+
+delete-minikube :		## Stop Minikube
+	minikube delete -p go-traces
+
+deploy-all-infra :		## Deploy all infrastructure
+	cd infrastructure/ && make deploy-all
+
+delete-all-infra :		## Delete all infrastructure
+	cd infrastructure/ && make delete-all
+
+## K8S apps
+
+build-all-apps :		## Build all applications
 	cd standalone/ && make build
 	cd grpc-client/ && make build
 	cd grpc-server/ && make build
 	cd http-client/ && make build
 	cd http-server/ && make build
 	cd http-server-db/ && make build
-	cd kafka-consumer/ && make build
-	cd kafka-producer/ && make build
+	# cd kafka-consumer/ && make build
+	# cd kafka-producer/ && make build
 	cd kubemq-consumer/ && make build
 	cd kubemq-producer/ && make build
 
-__check-container-tag-all :
+__check-container-tag-all-apps :
 	@[ "$(CONTAINER_TAG)" ] || ( echo "Missing container tag (CONTAINER_TAG), please define it and retry"; exit 1 )
 
-container-build-all : build-all __check-container-tag-all		## Build container for all applications
+container-build-all-apps : build-all-apps __check-container-tag-all-apps		## Build container for all applications
 	cd standalone/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 	cd grpc-client/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 	cd grpc-server/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 	cd http-client/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 	cd http-server/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 	cd http-server-db/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
-	cd kafka-consumer/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
-	cd kafka-producer/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
+	# cd kafka-consumer/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
+	# cd kafka-producer/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 	cd kubemq-consumer/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 	cd kubemq-producer/ && make container-build CONTAINER_TAG=$(CONTAINER_TAG)
 
-container-push-all : __check-container-tag-all		## Push container of all applications to Docker hub
+container-push-all-apps : __check-container-tag-all-apps		## Push container of all applications to Docker hub
 	cd standalone/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 	cd grpc-client/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 	cd grpc-server/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 	cd http-client/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 	cd http-server/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 	cd http-server-db/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
-	cd kafka-consumer/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
-	cd kafka-producer/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
+	# cd kafka-consumer/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
+	# cd kafka-producer/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 	cd kubemq-consumer/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 	cd kubemq-producer/ && make container-push CONTAINER_TAG=$(CONTAINER_TAG)
 
+deploy-all-apps :		## Deploy all applications to Kubernetes
+	cd standalone/ && make deploy
+	cd grpc-client/ && make deploy
+	cd grpc-server/ && make deploy
+	cd http-client/ && make deploy
+	cd http-server/ && make deploy
+	# cd http-server-db/ && make deploy
+	# cd kafka-consumer/ && make deploy
+	# cd kafka-producer/ && make deploy
+	cd kubemq-consumer/ && make deploy
+	cd kubemq-producer/ && make deploy
 
-## infra
+delete-all-apps :		## Deploy all applications from Kubernetes
+	cd standalone/ && make delete
+	cd grpc-client/ && make delete
+	cd grpc-server/ && make delete
+	cd http-client/ && make delete
+	cd http-server/ && make delete
+	# cd http-server-db/ && make delete
+	# cd kafka-consumer/ && make delete
+	# cd kafka-producer/ && make delete
+	cd kubemq-consumer/ && make delete
+	cd kubemq-producer/ && make delete
+
+## K8S ops
+
+port-forw-grafana :		##
+	cd infrastructure/ && make port-forw-grafana
+
+port-forw-jaeger :		##
+	cd infrastructure/ && make port-forw-jaeger
+
+## LOCAL infra
 
 ### jaeger
 
@@ -74,7 +122,6 @@ stop-jaeger :		## Stop Jaeger (all-in-one) in container
 open-jaeger-ui :		## Open Jaeger UI in browser
 	open http://localhost:16686
 
-
 ### zipkin
 
 run-zipkin :		## Run Zipkin in a container
@@ -88,7 +135,6 @@ stop-zipkin :		## Stop Zipkin in container
 open-zipkin-ui :		## Open Zipkin UI in browser
 	open http://localhost:9411
 
-
 ### postgres
 
 run-postgres :		## Run PostgreSQL in a container
@@ -96,16 +142,6 @@ run-postgres :		## Run PostgreSQL in a container
 
 stop-postgres :		## Stop PostgreSQL in container
 	cd http-server/ && make stop-postgres
-
-
-### kafka
-
-run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
-	cd kafka-producer/ && make run-kafka
-
-stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
-	cd kafka-producer/ && make stop-kafka
-
 
 ### kubemq
 
@@ -121,9 +157,15 @@ proxy-kubemq :		## Proxy KubeMQ
 open-kubemq-ui :		## Open KubeMQ UI in browser
 	cd kubemq-producer/ && make open-kubemq-ui
 
+### kafka
 
+run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
+	cd kafka-producer/ && make run-kafka
 
-## applications
+stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
+	cd kafka-producer/ && make stop-kafka
+
+## LOCAL applications
 
 ### http
 
@@ -132,7 +174,6 @@ run-http-server :		## Run HTTP server
 
 run-http-client :		## Run HTTP client
 	cd http-client/ && make start
-
 
 ### grpc
 
@@ -150,6 +191,13 @@ run-grpc-server :		## Run gRPC server
 run-grpc-client :		## Run gRPC client
 	cd grpc-client/ && make start
 
+### kubemq
+
+run-kubemq-consumer :		## Run KubeMQ consumer
+	cd kubemq-consumer/ && make start
+
+run-kubemq-producer :		## Run KubeMQ producer
+	cd kubemq-producer/ && make start
 
 ### kafka
 
@@ -158,15 +206,6 @@ run-kafka-consumer :		## Run Kafka consumer
 
 run-kafka-producer :		## Run Kafka producer
 	cd kafka-producer/ && make start
-
-
-### kubemq
-
-run-kubemq-consumer :		## Run KubeMQ consumer
-	cd kubemq-consumer/ && make start
-
-run-kubemq-producer :		## Run KubeMQ producer
-	cd kubemq-producer/ && make start
 
 
 
