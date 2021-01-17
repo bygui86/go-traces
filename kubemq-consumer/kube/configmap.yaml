@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubemq-consumer
+data:
+  # logging
+  # LOG_LEVEL: debug
+
+  # tracing
+  ## jaeger general
+  JAEGER_SERVICE_NAME: kubemq-consumer
+  JAEGER_SAMPLER_TYPE: const
+  JAEGER_SAMPLER_PARAM: "1"
+  JAEGER_REPORTER_LOG_SPANS: "true"
+  JAEGER_REPORTER_FLUSH_INTERVAL: 1s
+  JAEGER_AGENT_PORT: "6831"
+  ## grafana-tempo
+  JAEGER_AGENT_HOST: tempo.tracing.svc.cluster.local
+  ## jaeger
+  ### agent
+  # JAEGER_AGENT_HOST: jaeger-agent.tracing.svc.cluster.local
+  ### bypass agent, directly to collector
+  # JAEGER_ENDPOINT: http://jaeger-collector.tracing.svc.cluster.local:14268/api/traces
+
+  # kubemq
+  KUBEMQ_HOST: kubemq-cluster-grpc.kubemq.svc.cluster.local
+  KUBEMQ_PORT: "50000"
+  KUBEMQ_CHANNEL: stream.channel
+  KUBEMQ_CONSUMER_GROUP: my-group
