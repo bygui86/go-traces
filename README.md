@@ -1,99 +1,64 @@
 
 # Go traces
 
-Go sample project to expose traces
+## Description
 
-## Run
+Some simple applications to explore how to push traces in various context:
 
-### Tracing server
+- http
+- grpc
+- broker
 
-#### Jaeger
+This is still a work-in-progress, [here](TODOs.md) the TODO list.
 
-start Jaeger
-```shell script
-make run-jaeger
-make open-jaeger-ui
+---
+
+## How to start
+
+### 1. Kubernetes cluster (Minikube)
+
+```bash
+make start-minikube
 ```
 
-#### or Zipkin
+### 2. Infrastructure
 
-start Zipkin
-```shell script
-make run-zipkin
-make open-zipkin-ui
+```bash
+make deploy-all-infra
 ```
 
-### HTTP applications
+### 3. Applications
 
-1. start PostgreSQL
-    ```shell script
-    make run-postgres
-    ```
+```bash
+make deploy-all-apps
+```
 
-2. start server
-    ```shell script
-    make run-http-server
-    ```
+### 4. Observe
 
-3. start client
-    ```shell script
-    make run-http-client
-    ```
+In a terminal port-forward Grafana
 
-4. play a bit with [Postman](https://www.postman.com/) loading the prepared collections
-    - [HTTP server collection](http-server/postman/postman_collection.json)
-    - [HTTP client collection](http-client/postman/postman_collection.json)
+```bash
+make port-forw-grafana
+```
 
-### Broker applications
+Go to `http://localhost:3000` in the browser to access Grafana dashboards
 
-#### Kafka
+Credentials:
 
-1. start Kafka
-    ```shell script
-    make run-kafka
-    ```
+`username`: admin
+`password`: secret
 
-2. start consumer
-    ```shell script
-    make run-kafka-consumer
-    ```
+### 5. Generate HTTP applications traces
 
-3. start producer
-    ```shell script
-    make run-kafka-producer
-    ```
+1. Open port forwarding to `http-client`
 
-#### KubeMQ
+1. Use the [Postman](https://www.postman.com/) [provided](postman/) to make some REST requests
 
-1. start KubeMQ
-    ```shell script
-    make run-kubemq
-    make proxy-kubemq
-    # in another terminal
-    make open-kubemq-ui
-    ```
+### 6. Cleanup
 
-2. start consumer
-    ```shell script
-    make run-kubemq-consumer
-    ```
-
-3. start producer
-    ```shell script
-    make run-kubemq-producer
-    ```
-
-### gRPC applications
-
-1. start server
-    ```shell script
-    make run-grpc-server
-    ```
-
-2. start client
-    ```shell script
-    make run-grpc-client
-    ```
+```bash
+make stop-minikube delete-minikube
+```
 
 ---
 
@@ -101,33 +66,48 @@ make open-zipkin-ui
 
 ### Tracing
 
+Tracing technologies:
+
+- `Jaeger`, working as expected
+- `Zipkin`, tested only locally, not in Kubernetes
+- `GrafanaTempo`, not able to receive traces from same applications using Jaeger library
+
 All applications support both Jaeger and Zipkin.
 
 Tracing configurations can be set through environment variables:
 
 | EnvVar | Default | Available values |
 | --- | --- | --- |
-| ENABLE_MONITORING | true | true, false |
-| MONITOR_HOST | localhost | - |
-| MONITOR_PORT | 9090 | - |
+| ENABLE_TRACING | true | true, false |
+
+All default Jaeger environment variables are fully supported transparently.
 
 ### Monitoring
 
-All applications expose `/metrics` endpoint on port:
+Monitoring technologies:
 
-    - 9090 (clients and consumers)
-    - 9190 (servers and producers)
+- `node-exporter`
+- `kube-state-metrics`
+- `prometheus-adapter`
+- `Prometheus`
+- `Grafana`
+
+All applications expose `:9090/metrics` endpoint.
 
 Monitoring configurations can be set through environment variables:
 
 | EnvVar | Default | Available values |
 | --- | --- | --- |
-| ENABLE_TRACING | true | true, false |
-| TRACING_TECH | jaeger | jaeger, zipkin |
-
-All default Jaeger environment variables are fully supported transparently.
+| ENABLE_MONITORING | true | true, false |
+| MONITOR_HOST | 0.0.0.0 | - |
+| MONITOR_PORT | 9090 | - |
 
 ### Logging
+
+Logging technologies:
+
+- (`TBD`) `Promtail` or `Vector`
+- `GrafanaLoki`
 
 All applications use `go.uber.org/zap` as logging library.
 
@@ -139,33 +119,6 @@ Logging configurations can be set through environment variables:
 | --- | --- | --- |
 | LOG_ENCODING | console | console, json |
 | LOG_LEVEL | info | trace, debug, info, warn, error, fatal |
-
----
-
-## Examples
-
-- [x] rest server with database
-- [x] logging adoption
-- [ ] monitoring adoption - `WIP`
-    - [x] http services
-    - [ ] kafka services
-    - [ ] kubemq services
-    - [ ] grpc services
-- [x] tracing adoption
-    - [x] jaeger
-    - [x] zipkin
-- [x] simple traces example
-- [x] traces with logging
-- [x] traces with monitoring
-- [x] internal span propagation example
-- [ ] external span propagation example - `WIP`
-    - [x] db tracer example
-    - [x] http client/server example
-    - [x] kafka example
-    - [x] kubemq example
-    - [x] grpc example
-    - [ ] `TBD` http client/middleware/server example
-    - [ ] `TBD` ask google example
 
 ---
 
