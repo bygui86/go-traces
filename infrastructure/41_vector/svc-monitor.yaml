@@ -1,20 +1,17 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: tempo
+  name: vector-agent
 spec:
   selector:
     matchLabels:
-      app: tempo
-      domain: tracing
-      group: tempo
+      app: vector-agent
+      domain: logging
+      feature: vector
   namespaceSelector:
     matchNames:
-      - tracing
+      - logging
   endpoints:
     - port: metrics
-      interval: 15s
-      scrapeTimeout: 14s
-    - port: query-jaeger-metrics
       interval: 15s
       scrapeTimeout: 14s
