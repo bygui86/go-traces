@@ -4,7 +4,7 @@ metadata:
   name: kubemq-consumer
 data:
   # logging
-  # LOG_LEVEL: debug
+  LOG_ENCODING: json
 
   # tracing
   ## jaeger general
