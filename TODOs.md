@@ -3,16 +3,12 @@
 
 ## Goals
 
-- [ ] logging
-  - [ ] send logs to loki using promtail
-  - [ ] send logs to loki using vector
-  - [ ] see logs in grafana from loki
-- [ ] brokers
-  - [x] ~~deploy kubemq~~
-  - [x] ~~scrape kubemq metrics~~
-  - [ ] kubemq grafana dashboard
 - [ ] integrations
   - [ ] `integrate traces from jaeger and logs from loki in grafana`
+- [ ] vector
+  - [ ] grafana dashboard
+- [ ] kubemq
+  - [ ] grafana dashboard
 
 ## Apps
 
@@ -31,45 +27,17 @@
 
 ### Special tasks
 
-- [x] ~~split http-server into in-memory-db and db~~
-- [x] ~~replace all `host = locahost` with `host = 0.0.0.0` as default config~~
 - [ ] add k8s probes on each app
 
 ## Infrastructure
 
+- [ ] loki + grafana
+  - [ ] config traces integration with jaeger
+    - https://grafana.com/docs/grafana/latest/datasources/jaeger/#linking-trace-id-from-logs
+    - https://grafana.com/docs/grafana/latest/datasources/loki/#derived-fields
+
 - [ ] kubemq
   - [ ] grafana dashboard
 
-- [ ] promtail
-  - [ ] kustomize
-  - [ ] manifests
-  - [ ] labels
-  - [ ] resources
-  - [ ] storage
-  - [ ] affinity/tolerations
-  - [ ] rbac/security-ctx
-  - [ ] config
-  - [ ] prometheus metrics
-  - [ ] grafana dashboard
-
 - [ ] vector
-  - [ ] kustomize
-  - [ ] manifests
-  - [ ] labels
-  - [ ] resources
-  - [ ] storage
-  - [ ] affinity/tolerations
-  - [ ] rbac/security-ctx
-  - [ ] config
-  - [ ] prometheus metrics
   - [ ] grafana dashboard
-
-- [ ] loki + grafana
-  - [ ] config traces integration with jaeger
-  - [ ] config traces integration with tempo
-
-- [ ] tempo
-  - [ ] retry sending traces to tempo
-  - [ ] integration with grafana
-  - [ ] integration with loki
-  - [ ] grafana dashboards check

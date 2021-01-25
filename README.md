@@ -159,7 +159,6 @@ Logging configurations can be set through environment variables:
 - https://docs.lightstep.com/docs/go-add-spans
 
 ### Grafana Tempo
-
 - https://grafana.com/docs/tempo/latest/
 
 #### DB
@@ -202,5 +201,5 @@ Logging configurations can be set through environment variables:
 
 ### Integration with logs (Grafana Loki)
 
-- https://grafana.com/docs/tempo/latest/guides/loki-derived-fields/
 - https://grafana.com/docs/grafana/latest/datasources/loki/#derived-fields
+- https://grafana.com/docs/tempo/latest/guides/loki-derived-fields/
