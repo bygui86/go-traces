@@ -21,18 +21,18 @@ deploy-operator :		## Deploy KubeMQ Operator
 deploy-cluster :		## Deploy KubeMQ cluster
 	kustomize build 30_cluster/ | kubectl apply -f -
 
-deploy-conn :		## Deploy KubeMQ connectors
-	kustomize build 40_connectors/ | kubectl apply -f -
-
-deploy-dash :		## Deploy KubeMQ dashboard
-	kustomize build 50_dashboard/ | kubectl apply -f -
-
 deploy-monitor :		## Deploy KubeMQ monitoring
 	kustomize build 60_monitoring/ | kubectl apply -f -
 	kubectl label svc kubemq-cluster headless="true" -n kubemq
 	kubectl label svc kubemq-cluster-api feature="api" headless="false" -n kubemq
 	kubectl label svc kubemq-cluster-grpc feature="grpc" headless="false" -n kubemq
 	kubectl label svc kubemq-cluster-rest feature="rest" headless="false" -n kubemq
+
+deploy-conn :		## Deploy KubeMQ connectors
+	kustomize build 40_connectors/ | kubectl apply -f -
+
+deploy-dash :		## Deploy KubeMQ dashboard
+	kustomize build 50_dashboard/ | kubectl apply -f -
 
 deploy-all : deploy-crds deploy-operator deploy-cluster deploy-monitor		## Deploy whole KubeMQ environment
 
@@ -48,22 +48,25 @@ delete-operator :		## Delete KubeMQ Operator
 delete-cluster :		## Delete KubeMQ cluster
 	kustomize build 30_cluster/ | kubectl delete -f -
 
+delete-monitor :		## Delete KubeMQ monitoring
+	kustomize build 60_monitoring/ | kubectl delete -f -
+
 delete-conn :		## Delete KubeMQ connectors
 	kustomize build 40_connectors/ | kubectl delete -f -
 
 delete-dash :		## Delete KubeMQ dashboard
 	kustomize build 50_dashboard/ | kubectl delete -f -
 
-delete-monitor :		## Delete KubeMQ monitoring
-	kustomize build 60_monitoring/ | kubectl delete -f -
-
 delete-all : delete-monitor delete-cluster delete-operator delete-crds		## Delete whole KubeMQ environment
 
 
 ## ops
 
-port-forw-prom :		## Open port forwarding to KubeMQ
-	@kubectl port-forward svc/kubemq 32000 -n kubemq
+port-forw-cluster :		## Open port forwarding to KubeMQ cluster
+	kubectl port-forward svc/kubemq-cluster-grpc 50000 -n kubemq
+
+port-forw-dash :		## Open port forwarding to KubeMQ dashboard
+	kubectl port-forward svc/kubemq-dashboard 3000 8080 -n kubemq
 
 
 ## helpers
