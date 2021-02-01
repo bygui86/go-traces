@@ -1,0 +1,65 @@
+
+apiVersion: 1
+
+datasources:
+
+  - name: prometheus
+    uid: prometheus
+    type: prometheus
+    orgId: 1
+    url: $PROMETHEUS_URL
+    access: proxy
+    isDefault: true
+    version: 1
+    editable: true
+
+  - name: loki
+    uid: loki
+    type: loki
+    orgId: 1
+    url: $LOKI_URL
+    access: proxy
+    isDefault: false
+    version: 1
+    editable: true
+    jsonData:
+      derivedFields:
+        - name: traceId
+          matcherRegex: "Reporting span (\\w+)"
+          url: $${__value.raw}
+          datasourceUid: jaeger
+
+  - name: loki-prometheus
+    uid: loki-prometheus
+    type: prometheus
+    orgId: 1
+    url: $LOKI_PROMETHEUS_URL
+    access: proxy
+    isDefault: false
+    version: 1
+    editable: true
+
+  - name: jaeger
+    uid: jaeger
+    type: jaeger
+    orgId: 1
+    url: $JAEGER_URL
+    access: proxy
+    isDefault: false
+    version: 1
+    editable: true
+    jsonData:
+      tracesToLogs:
+        datasourceUid: loki
+        tags:
+          - app
+
+  # - name: tempo
+  #   uid: tempo
+  #   type: tempo
+  #   orgId: 1
+  #   url: $TEMPO_URL
+  #   access: proxy
+  #   isDefault: false
+  #   version: 1
+  #   editable: true

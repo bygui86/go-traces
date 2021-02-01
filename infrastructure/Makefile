@@ -24,19 +24,19 @@ deploy-reloader :		## Deploy Reloader
 deploy-loki :		## Deploy Loki
 	kustomize build 40_loki/ | kubectl apply -f -
 
-deploy-vector :		## Deploy Vector
-	kustomize build 41_vector/ | kubectl apply -f -
-
 deploy-jaeger :		## Deploy Jaeger
 	cd 50_jaeger && make deploy-all
 
-deploy-grafana :		## Deploy Grafana
-	kustomize build 60_grafana/ | kubectl apply -f -
-
 deploy-kubemq :		## Deploy KubeMQ
-	cd 70_kubemq && make deploy-all
+	cd 60_kubemq && make deploy-all
 
-deploy-all : deploy-ns deploy-prom deploy-reloader deploy-loki deploy-vector deploy-jaeger deploy-grafana deploy-kubemq		## Deploy all infrastructure
+deploy-grafana :		## Deploy Grafana
+	kustomize build 70_grafana/ | kubectl apply -f -
+
+deploy-vector :		## Deploy Vector
+	kustomize build 80_vector/ | kubectl apply -f -
+
+deploy-all : deploy-ns deploy-prom deploy-reloader deploy-loki deploy-jaeger deploy-kubemq deploy-grafana deploy-vector		## Deploy all infrastructure
 
 
 ## delete
@@ -53,19 +53,19 @@ delete-reloader :		## Delete Reloader
 delete-loki :		## Delete Loki
 	kustomize build 40_loki/ | kubectl delete -f -
 
-delete-vector :		## Delete Vector
-	kustomize build 41_vector/ | kubectl delete -f -
-
 delete-jaeger :		## Delete Jaeger
 	cd 50_jaeger && make delete-all
 
-delete-grafana :		## Delete Grafana
-	kustomize build 60_grafana/ | kubectl delete -f -
-
 delete-kubemq :		## Delete KubeMQ
-	cd 70_kubemq && make delete-all
+	cd 60_kubemq && make delete-all
 
-delete-all : delete-grafana delete-jaeger delete-vector delete-loki delete-reloader delete-prom		## Delete all infrastructure
+delete-grafana :		## Delete Grafana
+	kustomize build 70_grafana/ | kubectl delete -f -
+
+delete-vector :		## Delete Vector
+	kustomize build 80_vector/ | kubectl delete -f -
+
+delete-all : delete-vector delete-grafana delete-kubemq delete-jaeger delete-loki delete-reloader delete-prom		## Delete all infrastructure
 	sleep 60
 	@make delete-ns
 
@@ -86,6 +86,9 @@ port-forw-loki :		## Open port forwarding to Loki
 
 port-forw-vector :		## Open port forwarding to Loki
 	@kubectl port-forward svc/vector-agent 8686 9091:9090 -n logging
+
+port-forw-kubemq :		## Open port forwarding to KubeMQ cluster
+	@cd 60_kubemq && make port-forw-cluster
 
 
 ## helpers

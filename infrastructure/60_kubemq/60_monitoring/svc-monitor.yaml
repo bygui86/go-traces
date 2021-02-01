@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kubemq-cluster
+spec:
+  selector:
+    matchLabels:
+      app: kubemq-cluster
+      feature: api
+      headless: "false"
+  namespaceSelector:
+    matchNames:
+      - kubemq
+  endpoints:
+    - port: api-port
+      interval: 15s
+      scrapeTimeout: 14s

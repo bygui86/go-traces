@@ -1,0 +1,16 @@
+# We leave `vector.toml` file name available to let externally managed config maps to provide it.
+
+# Configuration for vector.
+# Docs: https://vector.dev/docs/
+
+# Data dir is location controlled at the `DaemonSet`.
+data_dir = "/vector-data-dir"
+[log_schema]
+  host_key = "host"
+  message_key = "message"
+  source_type_key = "source_type"
+  timestamp_key = "timestamp"
+
+# Ingest logs from Kubernetes.
+[sources.kubernetes_logs]
+  type = "kubernetes_logs"

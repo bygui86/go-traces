@@ -1,0 +1,367 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: grafana
+          # 7.3.7
+          # image: grafana/grafana:7.3.7@sha256:5f19b6c385e8bfb8e5c9ecc7cdd123a453af3cf01e7c20d20059e770f656286d
+          # 7.4.0-beta1
+          image: grafana/grafana:7.4.0-beta1@sha256:54ef31ea1de5345b20cfc22aa7da3d11ff6e6074542aa06d6d03bdcc0d0e07b4
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: grafana
+            - secretRef:
+                name: grafana
+          ports:
+            - name: http-ui
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1G
+            limits:
+              cpu: 500m
+              memory: 1G
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http-ui
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http-ui
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            # storage
+            # - mountPath: /var/lib/grafana
+            #   name: data
+            # provisioning
+            ## datasources
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+            ## dashboards
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: grafana-dashboards
+            ## dashboards
+            ### kubernetes
+            #### networking
+            - mountPath: /etc/dashboards/kubernetes/k8s-networking-cluster.json
+              subPath: k8s-networking-cluster.json
+              name: grafana-dashboard-k8s-networking-cluster
+            - mountPath: /etc/dashboards/kubernetes/k8s-networking-kube-dns.json
+              subPath: k8s-networking-kube-dns.json
+              name: grafana-dashboard-k8s-networking-kube-dns
+            - mountPath: /etc/dashboards/kubernetes/k8s-networking-namespace-by-pod.json
+              subPath: k8s-networking-namespace-by-pod.json
+              name: grafana-dashboard-k8s-networking-namespace-by-pod
+            - mountPath: /etc/dashboards/kubernetes/k8s-networking-namespace-by-workload.json
+              subPath: k8s-networking-namespace-by-workload.json
+              name: grafana-dashboard-k8s-networking-namespace-by-workload
+            - mountPath: /etc/dashboards/kubernetes/k8s-networking-pod.json
+              subPath: k8s-networking-pod.json
+              name: grafana-dashboard-k8s-networking-pod
+            - mountPath: /etc/dashboards/kubernetes/k8s-networking-workload.json
+              subPath: k8s-networking-workload.json
+              name: grafana-dashboard-k8s-networking-workload
+            #### resources
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-cluster-details.json
+              subPath: k8s-resources-cluster-details.json
+              name: grafana-dashboard-k8s-resources-cluster-details
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-cluster-summary.json
+              subPath: k8s-resources-cluster-summary.json
+              name: grafana-dashboard-k8s-resources-cluster-summary
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-cluster-use.json
+              subPath: k8s-resources-cluster-use.json
+              name: grafana-dashboard-k8s-resources-cluster-use
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-namespace-by-pod.json
+              subPath: k8s-resources-namespace-by-pod.json
+              name: grafana-dashboard-k8s-resources-namespace-by-pod
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-namespace-by-workload.json
+              subPath: k8s-resources-namespace-by-workload.json
+              name: grafana-dashboard-k8s-resources-namespace-by-workload
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-node-by-pod.json
+              subPath: k8s-resources-node-by-pod.json
+              name: grafana-dashboard-k8s-resources-node-by-pod
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-node-use.json
+              subPath: k8s-resources-node-use.json
+              name: grafana-dashboard-k8s-resources-node-use
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-node.json
+              subPath: k8s-resources-node.json
+              name: grafana-dashboard-k8s-resources-node
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-persistent-volumes.json
+              subPath: k8s-resources-persistent-volumes.json
+              name: grafana-dashboard-k8s-resources-persistent-volumes
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-pod-details.json
+              subPath: k8s-resources-pod-details.json
+              name: grafana-dashboard-k8s-resources-pod-details
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-pod-summary.json
+              subPath: k8s-resources-pod-summary.json
+              name: grafana-dashboard-k8s-resources-pod-summary
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-statefulset.json
+              subPath: k8s-resources-statefulset.json
+              name: grafana-dashboard-k8s-resources-statefulset
+            - mountPath: /etc/dashboards/kubernetes/k8s-resources-workload.json
+              subPath: k8s-resources-workload.json
+              name: grafana-dashboard-k8s-resources-workload
+            #### system
+            - mountPath: /etc/dashboards/kubernetes/k8s-system-api-server.json
+              subPath: k8s-system-api-server.json
+              name: grafana-dashboard-k8s-system-api-server
+            - mountPath: /etc/dashboards/kubernetes/k8s-system-controller-manager.json
+              subPath: k8s-system-controller-manager.json
+              name: grafana-dashboard-k8s-system-controller-manager
+            - mountPath: /etc/dashboards/kubernetes/k8s-system-kubelet.json
+              subPath: k8s-system-kubelet.json
+              name: grafana-dashboard-k8s-system-kubelet
+            - mountPath: /etc/dashboards/kubernetes/k8s-system-kube-proxy.json
+              subPath: k8s-system-kube-proxy.json
+              name: grafana-dashboard-k8s-system-kube-proxy
+            - mountPath: /etc/dashboards/kubernetes/k8s-system-scheduler.json
+              subPath: k8s-system-scheduler.json
+              name: grafana-dashboard-k8s-system-scheduler
+            ### monitoring
+            - mountPath: /etc/dashboards/monitoring/grafana.json
+              subPath: grafana.json
+              name: grafana-dashboard-grafana-self
+            # - mountPath: /etc/dashboards/monitoring/node-exporter.json
+            #   subPath: node-exporter.json
+            #   name: grafana-dashboard-node-exporter
+            - mountPath: /etc/dashboards/monitoring/prometheus.json
+              subPath: prometheus.json
+              name: grafana-dashboard-prometheus
+            ### logging
+            - mountPath: /etc/dashboards/logging/loki-chunks.json
+              subPath: loki-chunks.json
+              name: grafana-dashboard-loki-chunks
+            - mountPath: /etc/dashboards/logging/loki-logs.json
+              subPath: loki-logs.json
+              name: grafana-dashboard-loki-logs
+            - mountPath: /etc/dashboards/logging/loki-operational.json
+              subPath: loki-operational.json
+              name: grafana-dashboard-loki-operational
+            - mountPath: /etc/dashboards/logging/loki-quick-search.json
+              subPath: loki-quick-search.json
+              name: grafana-dashboard-loki-quick-search
+            - mountPath: /etc/dashboards/logging/loki-reads.json
+              subPath: loki-reads.json
+              name: grafana-dashboard-loki-reads
+            - mountPath: /etc/dashboards/logging/loki-writes.json
+              subPath: loki-writes.json
+              name: grafana-dashboard-loki-writes
+            # - mountPath: /etc/dashboards/logging/promtail.json
+            #   subPath: promtail.json
+            #   name: grafana-dashboard-promtail
+            # - mountPath: /etc/dashboards/logging/vector.json
+            #   subPath: vector.json
+            #   name: grafana-dashboard-vector
+            ### brokers
+            - mountPath: /etc/dashboards/brokers/kubemq.json
+              subPath: kubemq.json
+              name: grafana-dashboard-kubemq
+            ### tracing
+            - mountPath: /etc/dashboards/tracing/jaeger-all-in-one.json
+              subPath: jaeger-all-in-one.json
+              name: grafana-dashboard-jaeger-all-in-one
+            - mountPath: /etc/dashboards/tracing/tempo-operational.json
+              subPath: tempo-operational.json
+              name: grafana-dashboard-tempo-operational
+            - mountPath: /etc/dashboards/tracing/tempo-reads.json
+              subPath: tempo-reads.json
+              name: grafana-dashboard-tempo-reads
+            - mountPath: /etc/dashboards/tracing/tempo-resources.json
+              subPath: tempo-resources.json
+              name: grafana-dashboard-tempo-resources
+            - mountPath: /etc/dashboards/tracing/tempo-writes.json
+              subPath: tempo-writes.json
+              name: grafana-dashboard-tempo-writes
+            ## services
+            - mountPath: /etc/dashboards/services/go-services.json
+              subPath: go-services.json
+              name: grafana-dashboard-go-services
+            - mountPath: /etc/dashboards/services/global-status.json
+              subPath: global-status.json
+              name: grafana-dashboard-global-status
+
+      volumes:
+        # storage
+        # - persistentVolumeClaim:
+        #     claimName: data-grafana
+        #   name: data-grafana
+        # provisioning
+        ## datasources
+        - configMap:
+            name: grafana-datasources
+          name: grafana-datasources
+        ## dashboards
+        - configMap:
+            name: grafana-dashboards
+          name: grafana-dashboards
+        ## dashboards
+        ### kubernetes
+        #### networking
+        - configMap:
+            name: grafana-dashboard-k8s-networking-cluster
+          name: grafana-dashboard-k8s-networking-cluster
+        - configMap:
+            name: grafana-dashboard-k8s-networking-kube-dns
+          name: grafana-dashboard-k8s-networking-kube-dns
+        - configMap:
+            name: grafana-dashboard-k8s-networking-namespace-by-pod
+          name: grafana-dashboard-k8s-networking-namespace-by-pod
+        - configMap:
+            name: grafana-dashboard-k8s-networking-namespace-by-workload
+          name: grafana-dashboard-k8s-networking-namespace-by-workload
+        - configMap:
+            name: grafana-dashboard-k8s-networking-pod
+          name: grafana-dashboard-k8s-networking-pod
+        - configMap:
+            name: grafana-dashboard-k8s-networking-workload
+          name: grafana-dashboard-k8s-networking-workload
+        #### resources
+        - configMap:
+            name: grafana-dashboard-k8s-resources-cluster-details
+          name: grafana-dashboard-k8s-resources-cluster-details
+        - configMap:
+            name: grafana-dashboard-k8s-resources-cluster-summary
+          name: grafana-dashboard-k8s-resources-cluster-summary
+        - configMap:
+            name: grafana-dashboard-k8s-resources-cluster-use
+          name: grafana-dashboard-k8s-resources-cluster-use
+        - configMap:
+            name: grafana-dashboard-k8s-resources-namespace-by-pod
+          name: grafana-dashboard-k8s-resources-namespace-by-pod
+        - configMap:
+            name: grafana-dashboard-k8s-resources-namespace-by-workload
+          name: grafana-dashboard-k8s-resources-namespace-by-workload
+        - configMap:
+            name: grafana-dashboard-k8s-resources-node-by-pod
+          name: grafana-dashboard-k8s-resources-node-by-pod
+        - configMap:
+            name: grafana-dashboard-k8s-resources-node-use
+          name: grafana-dashboard-k8s-resources-node-use
+        - configMap:
+            name: grafana-dashboard-k8s-resources-node
+          name: grafana-dashboard-k8s-resources-node
+        - configMap:
+            name: grafana-dashboard-k8s-resources-persistent-volumes
+          name: grafana-dashboard-k8s-resources-persistent-volumes
+        - configMap:
+            name: grafana-dashboard-k8s-resources-pod-details
+          name: grafana-dashboard-k8s-resources-pod-details
+        - configMap:
+            name: grafana-dashboard-k8s-resources-pod-summary
+          name: grafana-dashboard-k8s-resources-pod-summary
+        - configMap:
+            name: grafana-dashboard-k8s-resources-statefulset
+          name: grafana-dashboard-k8s-resources-statefulset
+        - configMap:
+            name: grafana-dashboard-k8s-resources-workload
+          name: grafana-dashboard-k8s-resources-workload
+        #### system
+        - configMap:
+            name: grafana-dashboard-k8s-system-api-server
+          name: grafana-dashboard-k8s-system-api-server
+        - configMap:
+            name: grafana-dashboard-k8s-system-controller-manager
+          name: grafana-dashboard-k8s-system-controller-manager
+        - configMap:
+            name: grafana-dashboard-k8s-system-kubelet
+          name: grafana-dashboard-k8s-system-kubelet
+        - configMap:
+            name: grafana-dashboard-k8s-system-kube-proxy
+          name: grafana-dashboard-k8s-system-kube-proxy
+        - configMap:
+            name: grafana-dashboard-k8s-system-scheduler
+          name: grafana-dashboard-k8s-system-scheduler
+        ### monitoring
+        - configMap:
+            name: grafana-dashboard-grafana-self
+          name: grafana-dashboard-grafana-self
+        # - configMap:
+        #     name: grafana-dashboard-node-exporter
+        #   name: grafana-dashboard-node-exporter
+        - configMap:
+            name: grafana-dashboard-prometheus
+          name: grafana-dashboard-prometheus
+        ### logging
+        - configMap:
+            name: grafana-dashboard-loki-chunks
+          name: grafana-dashboard-loki-chunks
+        - configMap:
+            name: grafana-dashboard-loki-logs
+          name: grafana-dashboard-loki-logs
+        - configMap:
+            name: grafana-dashboard-loki-operational
+          name: grafana-dashboard-loki-operational
+        - configMap:
+            name: grafana-dashboard-loki-quick-search
+          name: grafana-dashboard-loki-quick-search
+        - configMap:
+            name: grafana-dashboard-loki-reads
+          name: grafana-dashboard-loki-reads
+        - configMap:
+            name: grafana-dashboard-loki-writes
+          name: grafana-dashboard-loki-writes
+        # - configMap:
+        #     name: grafana-dashboard-promtail
+        #   name: grafana-dashboard-promtail
+        # - configMap:
+        #     name: grafana-dashboard-vector
+        #   name: grafana-dashboard-vector
+        ### brokers
+        - configMap:
+            name: grafana-dashboard-kubemq
+          name: grafana-dashboard-kubemq
+        ### tracing
+        - configMap:
+            name: grafana-dashboard-jaeger-all-in-one
+          name: grafana-dashboard-jaeger-all-in-one
+        - configMap:
+            name: grafana-dashboard-tempo-operational
+          name: grafana-dashboard-tempo-operational
+        - configMap:
+            name: grafana-dashboard-tempo-reads
+          name: grafana-dashboard-tempo-reads
+        - configMap:
+            name: grafana-dashboard-tempo-resources
+          name: grafana-dashboard-tempo-resources
+        - configMap:
+            name: grafana-dashboard-tempo-writes
+          name: grafana-dashboard-tempo-writes
+        ## services
+        - configMap:
+            name: grafana-dashboard-go-services
+          name: grafana-dashboard-go-services
+        - configMap:
+            name: grafana-dashboard-global-status
+          name: grafana-dashboard-global-status

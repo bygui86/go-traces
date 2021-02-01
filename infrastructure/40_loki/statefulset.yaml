@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: loki
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   replicas: 1
   serviceName: loki-headless

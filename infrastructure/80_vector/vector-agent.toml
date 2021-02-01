@@ -1,0 +1,103 @@
+
+# Vector's API for introspection
+# https://vector.dev/docs/reference/api/
+[api]
+  enabled = true
+  address = "0.0.0.0:8686"
+  # The Playground is accessible via the /playground endpoint of the address set using the bind parameter.
+  # https://github.com/graphql/graphql-playground
+  playground = true
+
+# The Vector Kubernetes integration automatically defines a
+# `kubernetes_logs` source that is made available to you.
+# You do not need to define a log source.
+# https://vector.dev/docs/reference/sources/kubernetes_logs/
+
+# Vector's own internal metrics
+# https://vector.dev/docs/reference/sources/internal_metrics/
+[sources.internal_metrics]
+  type = "internal_metrics"
+
+# Host-level metrics (cpu, memory, disk, etc)
+# https://vector.dev/docs/reference/sources/host_metrics/
+[sources.host_metrics]
+  type = "host_metrics"
+  # collectors = ["cpu", "disk", "filesystem", "load", "memory", "network"] # optional, default
+  # scrape_interval_secs = 15 # optional, default, seconds
+
+# https://vector.dev/docs/reference/sinks/console/
+# [sinks.out]
+#   type = "console"
+#   # inputs = [ "kubernetes_logs" ]
+#   inputs = [ "internal_metrics" ]
+#   # inputs = [ "kubernetes_logs", "internal_metrics" ]
+#   target = "stdout"
+#   # Encoding
+#   encoding.codec = "json" # available values: json, text
+
+# https://vector.dev/docs/reference/sinks/prometheus_exporter/
+[sinks.prometheus]
+  type = "prometheus_exporter"
+  inputs = [ "internal_metrics", "host_metrics" ]
+  address = "0.0.0.0:9090"
+  default_namespace = "unknown" # sed as a namespace for metrics that don't have it
+  flush_period_secs = 60 # seconds
+  # buckets = [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
+  # quantiles = [0.5, 0.75, 0.9, 0.95, 0.99]
+
+# https://vector.dev/docs/reference/transforms/remove_fields/
+[transforms.remove_fields]
+  type = "remove_fields"
+  inputs = [ "kubernetes_logs" ]
+  fields = [ "file", "source_type", "kubernetes.container_image", "kubernetes.pod_ips", "kubernetes.pod_labels.pod-template-hash", "kubernetes.pod_uid" ]
+  # Loki "entry out of order" issue
+  # https://github.com/timberio/vector/issues/3057
+  # fields = [ "timestamp" ]
+
+# https://vector.dev/docs/reference/transforms/json_parser/
+[transforms.json_parser]
+  type = "json_parser"
+  inputs = [ "remove_fields" ]
+  drop_field = true
+  drop_invalid = true
+  field = "message"
+  overwrite_target = false
+  # target_field = ""
+
+# https://vector.dev/docs/reference/transforms/log_to_metric/
+# [transforms.log_to_metric]
+
+# https://vector.dev/docs/reference/sinks/loki/
+[sinks.loki]
+  # General
+  type = "loki"
+  # inputs = [ "kubernetes_logs" ]
+  inputs = [ "json_parser" ]
+  endpoint = "http://loki.logging.svc.cluster.local:3100"
+  remove_label_fields = true
+  remove_timestamp = true
+  # tenant_id = ""
+  # Batch
+  batch.max_events = 100000 # events
+  batch.timeout_secs = 1 # seconds
+  # Buffer
+  buffer.max_events = 500 # events, relevant when type = "memory"
+  buffer.max_size = 104900000 # bytes, required when type = "disk"
+  buffer.type = "memory" # available values: memory, disk
+  buffer.when_full = "block" # available values: block, drop_newest
+  # Encoding
+  encoding.codec = "json" # available values: json, text
+  # encoding.except_fields = ["message", "parent.child"]
+  # encoding.only_fields = ["message", "parent.child"]
+  # encoding.timestamp_format = "rfc3339"
+  # Healthcheck
+  # healthcheck.enabled = true
+  # Labels
+  labels.forwarder = "vector"
+  labels.node = "{{ kubernetes.pod_node_name }}"
+  labels.namespace = "{{ kubernetes.pod_namespace }}"
+  labels.pod = "{{ kubernetes.pod_name }}"
+  labels.pod_ip = "{{ kubernetes.pod_ip }}"
+  labels.container = "{{ kubernetes.container_name }}"
+  labels.app = "{{ kubernetes.pod_labels.app }}"
+  labels.domain = "{{ kubernetes.pod_labels.domain }}"

@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: vector-agent
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  minReadySeconds: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: vector-agent
+  template:
+    metadata:
+      labels:
+        app: vector-agent
+    spec:
+      terminationGracePeriodSeconds: 60
+      serviceAccountName: vector-agent
+      containers:
+        - name: vector
+          image: timberio/vector:0.11.1-debian@sha256:765c5317ce36f9752f6867eedea37ff01a75f056d89484824988352e3b93d677
+          # image: timberio/vector:0.11.1-alpine@sha256:caec33e11660ef8411e4cbfd5f695e44c716c958a9c5ceb247d71768527239c4
+          imagePullPolicy: IfNotPresent
+
+          args:
+            - --config
+            - /etc/vector/*.toml
+
+          env:
+            - name: VECTOR_SELF_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: VECTOR_SELF_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: VECTOR_SELF_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: LOG
+              value: info
+
+          ports:
+            - name: api
+              containerPort: 8686
+            - name: metrics
+              containerPort: 9090
+
+          resources:
+            requests:
+              cpu: 250m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            # advised
+            # requests:
+            #   cpu: 500m
+            #   memory: 64Mi
+            # limits:
+            #   cpu: "6"
+            #   memory: 1024Mi
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: api
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+
+          volumeMounts:
+            # Host log directory mount
+            - name: var-log
+              mountPath: /var/log/
+              readOnly: true
+            # Host mount for docker and containerd log file symlinks
+            - name: var-lib
+              mountPath: /var/lib
+              readOnly: true
+            # Vector data dir mount
+            - name: data-dir
+              mountPath: "/vector-data-dir"
+            # Vector config dir mount
+            - name: config-dir
+              mountPath: /etc/vector
+              readOnly: true
+
+      volumes:
+        # Log directory
+        - name: var-log
+          hostPath:
+            path: /var/log/
+        # Docker and containerd log files in Kubernetes are symlinks to this folder
+        - name: var-lib
+          hostPath:
+            path: /var/lib/
+        # Vector will store it's data here
+        - name: data-dir
+          hostPath:
+            path: /var/lib/vector/
+        # Vector config dir
+        - name: config-dir
+          projected:
+            sources:
+              - configMap:
+                  name: vector-agent-managed
+              - configMap:
+                  name: vector-agent-config
+                  optional: true
+              - secret:
+                  name: vector-agent-config
+                  optional: true
+
+      tolerations:
+        - operator: Exists

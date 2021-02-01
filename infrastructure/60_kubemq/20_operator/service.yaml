@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubemq-operator
+spec:
+  selector:
+    app: kubemq-operator
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+    - name: metrics
+      port: 8090
+      targetPort: metrics
