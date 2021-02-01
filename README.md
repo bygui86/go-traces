@@ -13,6 +13,29 @@ This is still a work-in-progress, [here](TODOs.md) the TODO list.
 
 ---
 
+## TODOs
+
+- [ ] vector
+  - [ ] internal grafana dashboard
+  - [ ] host grafana dashboard
+
+- [ ] add k8s probes on each app
+
+## Apps
+
+| App             | code | metrics | logs | traces | dockerfile | k8s manifests | k8s probes | status |
+|-----------------|------|---------|------|--------|------------|---------------|------------|--------|
+| standalone      | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| grpc-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| grpc-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| http-server-db  | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| http-server     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| http-client     | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| kubemq-producer | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| kubemq-consumer | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| kafka-producer  | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+| kafka-consumer  | ok   | ok      | ok   | ok     | ok         | ok            | todo       | ready  |
+
 ## How to start
 
 ### 1. Kubernetes cluster (Minikube)
@@ -199,7 +222,13 @@ Logging configurations can be set through environment variables:
 - https://grafana.com/blog/2019/11/22/kubecon-demo-a-preview-of-grafana-jaeger/
 - https://grafana.com/go/introduction-to-distributed-tracing
 
-### Integration with logs (Grafana Loki)
+### Grafana
+
+#### Integrate Loki with Jaeger (logs -> traces)
 
 - https://grafana.com/docs/grafana/latest/datasources/loki/#derived-fields
 - https://grafana.com/docs/tempo/latest/guides/loki-derived-fields/
+
+#### Integrate Jaeger with Loki (traces -> logs)
+
+- https://grafana.com/docs/grafana/latest/datasources/jaeger/#trace-to-logs
