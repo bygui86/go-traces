@@ -7,6 +7,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 
+	"github.com/bygui86/go-traces/kafka-consumer/commons"
 	"github.com/bygui86/go-traces/kafka-consumer/logging"
 	"github.com/bygui86/go-traces/kafka-consumer/tracing"
 )
@@ -39,6 +40,7 @@ func (c *KafkaConsumer) startConsumer() {
 				topicInfo, msgInfo, headersInfo)
 
 			if span != nil {
+				span.SetTag("app", commons.ServiceName)
 				span.Finish()
 			}
 

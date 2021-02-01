@@ -7,6 +7,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/opentracing/opentracing-go"
 
+	"github.com/bygui86/go-traces/kafka-producer/commons"
 	"github.com/bygui86/go-traces/kafka-producer/logging"
 	"github.com/bygui86/go-traces/kafka-producer/tracing"
 )
@@ -52,10 +53,13 @@ func (p *KafkaProducer) startProducer() {
 		case <-p.ticker.C:
 			span := opentracing.StartSpan(p.name)
 
+			span.SetTag("app", commons.ServiceName)
+
 			msg := p.messages[counter]
 
 			carrier := tracing.KafkaHeadersCarrier([]kafka.Header{
 				{"example", []byte("example-value")},
+				{"app", []byte(commons.ServiceName)},
 			})
 			traceErr := tracing.Inject(span, &carrier)
 			if traceErr != nil {

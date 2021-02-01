@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 
+	"github.com/bygui86/go-traces/http-server-db/commons"
 	"github.com/bygui86/go-traces/http-server-db/database"
 	"github.com/bygui86/go-traces/http-server-db/logging"
 )
@@ -19,7 +20,10 @@ func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) 
 	defer span.Finish()
 
 	startTimer := time.Now()
+
 	logging.Log.Info("Get products")
+
+	span.SetTag("app", commons.ServiceName)
 
 	count, _ := strconv.Atoi(request.FormValue("count"))
 	start, _ := strconv.Atoi(request.FormValue("start"))
@@ -54,6 +58,8 @@ func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
 	defer span.Finish()
 
 	startTimer := time.Now()
+
+	span.SetTag("app", commons.ServiceName)
 
 	vars := mux.Vars(request)
 	id, idErr := strconv.Atoi(vars["id"])
@@ -104,6 +110,8 @@ func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request
 
 	startTimer := time.Now()
 
+	span.SetTag("app", commons.ServiceName)
+
 	var product *database.Product
 	unmarshErr := json.NewDecoder(request.Body).Decode(&product)
 	if unmarshErr != nil {
@@ -145,6 +153,8 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 	defer span.Finish()
 
 	startTimer := time.Now()
+
+	span.SetTag("app", commons.ServiceName)
 
 	vars := mux.Vars(request)
 	id, idErr := strconv.Atoi(vars["id"])
@@ -201,6 +211,8 @@ func (s *Server) deleteProduct(writer http.ResponseWriter, request *http.Request
 	defer span.Finish()
 
 	startTimer := time.Now()
+
+	span.SetTag("app", commons.ServiceName)
 
 	vars := mux.Vars(request)
 	id, idErr := strconv.Atoi(vars["id"])

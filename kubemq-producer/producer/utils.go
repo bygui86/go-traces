@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 
+	"github.com/bygui86/go-traces/kubemq-producer/commons"
 	"github.com/bygui86/go-traces/kubemq-producer/logging"
 )
 
@@ -23,8 +24,11 @@ func (p *KubemqProducer) startProducer() {
 		case <-p.ticker.C:
 			span := opentracing.StartSpan(p.name)
 
+			span.SetTag("app", commons.ServiceName)
+
 			tags := make(map[string]string, 2)
 			tags["sample"] = "sample-value"
+			tags["app"] = commons.ServiceName
 
 			traceErr := opentracing.GlobalTracer().Inject(
 				span.Context(),
@@ -37,7 +41,7 @@ func (p *KubemqProducer) startProducer() {
 
 			eventStore := p.client.NewEventStore().
 				// SetChannel(p.config.kubemqChannel).
-				// AddTag("sample", "sample-value").
+				// AddTag("app", commons.ServiceName).
 				SetId(fmt.Sprintf("%s.%d", p.name, counter)).
 				SetBody(getMessage(100))
 			eventStore.Tags = tags

@@ -6,7 +6,6 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 
-	"github.com/bygui86/go-traces/kafka-consumer/commons"
 	"github.com/bygui86/go-traces/kafka-consumer/logging"
 )
 
@@ -50,7 +49,7 @@ func (c *KafkaConsumer) Start() error {
 			return err
 		}
 		logging.SugaredLog.Infof("Kafka consumer subscribed to topics: %s",
-			strings.Join(c.config.kafkaTopics, commons.ListSeparator))
+			strings.Join(c.config.kafkaTopics, ","))
 
 		go c.startConsumer()
 		c.running = true

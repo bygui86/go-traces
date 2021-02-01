@@ -25,6 +25,8 @@ func (s *Server) getProducts(writer http.ResponseWriter, request *http.Request) 
 
 	logging.Log.Info("Get products")
 
+	span.SetTag("app", commons.ServiceName)
+
 	endpointUrl := &url.URL{Path: rootProductsEndpoint}
 	path := s.baseURL.ResolveReference(endpointUrl)
 	restRequest, reqErr := http.NewRequest(http.MethodGet, path.String(), nil)
@@ -93,6 +95,8 @@ func (s *Server) getProduct(writer http.ResponseWriter, request *http.Request) {
 	defer span.Finish()
 
 	startTimer := time.Now()
+
+	span.SetTag("app", commons.ServiceName)
 
 	vars := mux.Vars(request)
 	id, idErr := strconv.Atoi(vars["id"])
@@ -175,6 +179,8 @@ func (s *Server) createProduct(writer http.ResponseWriter, request *http.Request
 	defer span.Finish()
 
 	startTimer := time.Now()
+
+	span.SetTag("app", commons.ServiceName)
 
 	// TODO find a way to log body
 	// requestBody, reqBosyErr := ioutil.ReadAll(request.Body)
@@ -262,6 +268,8 @@ func (s *Server) updateProduct(writer http.ResponseWriter, request *http.Request
 	defer span.Finish()
 
 	startTimer := time.Now()
+
+	span.SetTag("app", commons.ServiceName)
 
 	vars := mux.Vars(request)
 	id, idErr := strconv.Atoi(vars["id"])
@@ -361,6 +369,8 @@ func (s *Server) deleteProduct(writer http.ResponseWriter, request *http.Request
 	defer span.Finish()
 
 	startTimer := time.Now()
+
+	span.SetTag("app", commons.ServiceName)
 
 	vars := mux.Vars(request)
 	id, idErr := strconv.Atoi(vars["id"])

@@ -4,8 +4,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/bygui86/go-traces/kafka-producer/commons"
 )
 
 func GetStringEnv(key, fallback string) string {
@@ -17,7 +15,7 @@ func GetStringEnv(key, fallback string) string {
 
 func GetStringListEnv(key string, fallback []string) []string {
 	if value, ok := os.LookupEnv(key); ok {
-		return strings.Split(value, commons.ListSeparator)
+		return strings.Split(value, ",")
 	}
 	return fallback
 }

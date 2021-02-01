@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: standalone
 data:
+  # logging
+  LOG_ENCODING: json
+
   # tracing
   ## jaeger general
   JAEGER_SERVICE_NAME: standalone

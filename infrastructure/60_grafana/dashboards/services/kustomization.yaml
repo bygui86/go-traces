@@ -1,7 +1,0 @@
-
-resources:
-  - global-status.yaml
-  - go-services.yaml
-
-commonLabels:
-  grafanaFolder: services

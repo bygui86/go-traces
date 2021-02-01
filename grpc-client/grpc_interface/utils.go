@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Client) startGreeting() {
-	logging.SugaredLog.Infof("Start greeting %s every %s",
+	logging.SugaredLog.Infof("Start greeting %s every %s sec",
 		c.config.greetingName, c.config.greetingInterval.String())
 	c.ticker = time.NewTicker(c.config.greetingInterval)
 

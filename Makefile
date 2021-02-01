@@ -10,7 +10,9 @@
 
 # ACTIONS
 
-## K8S infra
+## K8S
+
+### infra
 
 start-minikube :		## Start Minikube
 	minikube start --vm-driver=docker --cpus=6 --memory=12288 --disk-size=30g -p go-traces
@@ -27,7 +29,7 @@ deploy-all-infra :		## Deploy all infrastructure
 delete-all-infra :		## Delete all infrastructure
 	cd infrastructure/ && make delete-all
 
-## K8S apps
+### apps
 
 build-all-apps :		## Build all applications
 	cd standalone/ && make build
@@ -75,10 +77,10 @@ deploy-all-apps :		## Deploy all applications to Kubernetes
 	cd http-client/ && make deploy
 	cd http-server/ && make deploy
 	# cd http-server-db/ && make deploy
-	# cd kafka-consumer/ && make deploy
-	# cd kafka-producer/ && make deploy
 	cd kubemq-consumer/ && make deploy
 	cd kubemq-producer/ && make deploy
+	# cd kafka-consumer/ && make deploy
+	# cd kafka-producer/ && make deploy
 
 delete-all-apps :		## Deploy all applications from Kubernetes
 	cd standalone/ && make delete
@@ -87,22 +89,29 @@ delete-all-apps :		## Deploy all applications from Kubernetes
 	cd http-client/ && make delete
 	cd http-server/ && make delete
 	# cd http-server-db/ && make delete
-	# cd kafka-consumer/ && make delete
-	# cd kafka-producer/ && make delete
 	cd kubemq-consumer/ && make delete
 	cd kubemq-producer/ && make delete
+	# cd kafka-consumer/ && make delete
+	# cd kafka-producer/ && make delete
 
-## K8S ops
+### ops
 
-port-forw-grafana :		##
+port-forw-http-client :		## Open port forwarding to http-client app
+	kubectl port-forward svc/http-client 8080 -n apps
+
+port-forw-grafana :		## Open port forwarding to Grafana
 	cd infrastructure/ && make port-forw-grafana
 
-port-forw-jaeger :		##
+port-forw-jaeger :		## Open port forwarding to Jaeger
 	cd infrastructure/ && make port-forw-jaeger
 
-## LOCAL infra
 
-### jaeger
+
+## LOCAL
+
+### infra
+
+#### jaeger
 
 run-jaeger :		## Run Jaeger (all-in-one) in a container
 	docker run -d --rm --name jaeger \
@@ -122,7 +131,7 @@ stop-jaeger :		## Stop Jaeger (all-in-one) in container
 open-jaeger-ui :		## Open Jaeger UI in browser
 	open http://localhost:16686
 
-### zipkin
+#### zipkin
 
 run-zipkin :		## Run Zipkin in a container
 	docker run -d --rm --name zipkin \
@@ -135,7 +144,7 @@ stop-zipkin :		## Stop Zipkin in container
 open-zipkin-ui :		## Open Zipkin UI in browser
 	open http://localhost:9411
 
-### postgres
+#### postgres
 
 run-postgres :		## Run PostgreSQL in a container
 	cd http-server/ && make run-postgres
@@ -143,7 +152,7 @@ run-postgres :		## Run PostgreSQL in a container
 stop-postgres :		## Stop PostgreSQL in container
 	cd http-server/ && make stop-postgres
 
-### kubemq
+#### kubemq
 
 run-kubemq :		## Run Minikube and deploy KubeMQ
 	cd kubemq-producer/ && make run-kubemq
@@ -157,7 +166,7 @@ proxy-kubemq :		## Proxy KubeMQ
 open-kubemq-ui :		## Open KubeMQ UI in browser
 	cd kubemq-producer/ && make open-kubemq-ui
 
-### kafka
+#### kafka
 
 run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
 	cd kafka-producer/ && make run-kafka
@@ -165,9 +174,9 @@ run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
 stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
 	cd kafka-producer/ && make stop-kafka
 
-## LOCAL applications
+### apps
 
-### http
+#### http
 
 run-http-server :		## Run HTTP server
 	cd http-server/ && make start
@@ -175,7 +184,7 @@ run-http-server :		## Run HTTP server
 run-http-client :		## Run HTTP client
 	cd http-client/ && make start
 
-### grpc
+#### grpc
 
 build-protobuf :		## Compile protobuf
 	rm -f ./grpc-protobuf/*.pb.go
@@ -191,7 +200,7 @@ run-grpc-server :		## Run gRPC server
 run-grpc-client :		## Run gRPC client
 	cd grpc-client/ && make start
 
-### kubemq
+#### kubemq
 
 run-kubemq-consumer :		## Run KubeMQ consumer
 	cd kubemq-consumer/ && make start
@@ -199,7 +208,7 @@ run-kubemq-consumer :		## Run KubeMQ consumer
 run-kubemq-producer :		## Run KubeMQ producer
 	cd kubemq-producer/ && make start
 
-### kafka
+#### kafka
 
 run-kafka-consumer :		## Run Kafka consumer
 	cd kafka-consumer/ && make start

@@ -33,8 +33,8 @@ RUN apk add --no-cache bash
 WORKDIR /bin/
 COPY --from=builder --chown=1001 /bin/app .
 
-## Metrics
-#EXPOSE 9090
+# Metrics
+EXPOSE 9090
 ## KubeProbes
 #EXPOSE 9091
 

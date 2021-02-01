@@ -7,6 +7,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 
+	"github.com/bygui86/go-traces/kubemq-consumer/commons"
 	"github.com/bygui86/go-traces/kubemq-consumer/logging"
 )
 
@@ -37,6 +38,8 @@ func (c *KubemqConsumer) startConsumer(msgChan <-chan *kubemq.EventStoreReceive,
 				logging.SugaredLog.Errorf("Error extracting span from tags: %s", spanErr.Error())
 			}
 			span := opentracing.StartSpan(c.name, ext.RPCServerOption(spanContext))
+
+			span.SetTag("app", commons.ServiceName)
 
 			msg := &Message{}
 			jsonErr := json.Unmarshal(streamMsg.Body, msg)

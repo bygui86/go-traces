@@ -11,7 +11,7 @@ import (
 	jaegerLogZap "github.com/uber/jaeger-client-go/log/zap"
 	jaegerProm "github.com/uber/jaeger-lib/metrics/prometheus"
 
-	"github.com/bygui86/go-traces/http-server/logging"
+	"github.com/bygui86/go-traces/standalone/logging"
 )
 
 /*

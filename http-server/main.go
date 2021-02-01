@@ -9,6 +9,7 @@ import (
 
 	"github.com/openzipkin/zipkin-go/reporter"
 
+	"github.com/bygui86/go-traces/http-server/commons"
 	"github.com/bygui86/go-traces/http-server/config"
 	"github.com/bygui86/go-traces/http-server/logging"
 	"github.com/bygui86/go-traces/http-server/monitoring"
@@ -17,8 +18,6 @@ import (
 )
 
 const (
-	serviceName = "http-server"
-
 	zipkinHost = "localhost"
 	zipkinPort = 9411
 )
@@ -33,7 +32,7 @@ var (
 func main() {
 	initLogging()
 
-	logging.SugaredLog.Infof("Start %s", serviceName)
+	logging.SugaredLog.Infof("Start %s", commons.ServiceName)
 
 	cfg := loadConfig()
 
@@ -52,7 +51,7 @@ func main() {
 
 	restServer = startRestServer()
 
-	logging.SugaredLog.Infof("%s up and running", serviceName)
+	logging.SugaredLog.Infof("%s up and running", commons.ServiceName)
 
 	startSysCallChannel()
 
@@ -85,7 +84,7 @@ func startMonitoringServer() *monitoring.Server {
 
 func initJaegerTracer() io.Closer {
 	logging.Log.Debug("Init Jaeger tracer")
-	closer, err := tracing.InitTestingJaeger(serviceName)
+	closer, err := tracing.InitTracer()
 	if err != nil {
 		logging.SugaredLog.Errorf("Jaeger tracer setup failed: %s", err.Error())
 		os.Exit(501)
@@ -95,7 +94,7 @@ func initJaegerTracer() io.Closer {
 
 func initZipkinTracer() reporter.Reporter {
 	logging.Log.Debug("Init Zipkin tracer")
-	zReporter, err := tracing.InitTestingZipkin(serviceName, zipkinHost, zipkinPort)
+	zReporter, err := tracing.InitTestingZipkin(commons.ServiceName, zipkinHost, zipkinPort)
 	if err != nil {
 		logging.SugaredLog.Errorf("Zipkin tracer setup failed: %s", err.Error())
 		os.Exit(501)

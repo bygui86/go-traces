@@ -1,87 +1,125 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"io"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
-	"github.com/uber/jaeger-client-go"
-	jaegerCfg "github.com/uber/jaeger-client-go/config"
+	"github.com/openzipkin/zipkin-go/reporter"
+
+	"github.com/bygui86/go-traces/standalone/commons"
+	"github.com/bygui86/go-traces/standalone/config"
+	"github.com/bygui86/go-traces/standalone/logging"
+	"github.com/bygui86/go-traces/standalone/monitoring"
+	"github.com/bygui86/go-traces/standalone/tracing"
+	"github.com/bygui86/go-traces/standalone/worker"
+)
+
+const (
+	zipkinHost = "localhost"
+	zipkinPort = 9411
+)
+
+var (
+	monitoringServer *monitoring.Server
+	jaegerCloser     io.Closer
+	zipkinReporter   reporter.Reporter
+	workerThread     *worker.Worker
 )
 
 func main() {
-	fmt.Println("Start standalone")
+	initLogging()
 
-	closer := prepareTracer()
+	logging.SugaredLog.Infof("Start %s", commons.ServiceName)
 
-	go func() {
-		for {
-			span := opentracing.StartSpan("simple-operation-main")
-			doWork(opentracing.ContextWithSpan(context.Background(), span))
-			span.Finish()
+	cfg := loadConfig()
+
+	if cfg.GetEnableMonitoring() {
+		monitoringServer = startMonitoringServer()
+	}
+
+	if cfg.GetEnableTracing() {
+		switch cfg.GetTracingTech() {
+		case config.TracingTechJaeger:
+			jaegerCloser = initJaegerTracer()
+		case config.TracingTechZipkin:
+			zipkinReporter = initZipkinTracer()
 		}
-	}()
+	}
 
-	fmt.Println("Standalone up and running")
+	workerThread = startWorker()
+
+	logging.SugaredLog.Infof("%s up and running", commons.ServiceName)
+
 	startSysCallChannel()
 
-	fmt.Println("Termination signal received! Timeout 3 seconds")
-	closeTracer(closer)
-	time.Sleep(5 * time.Second)
+	shutdownAndWait(1)
 }
 
-func prepareTracer() io.Closer {
-	cfg, cfgErr := jaegerCfg.FromEnv()
-	if cfgErr != nil {
-		fmt.Printf("ERROR - Get Jaeger configs failed: %s", cfgErr.Error())
-		panic(cfgErr)
+func initLogging() {
+	err := logging.InitGlobalLogger()
+	if err != nil {
+		logging.SugaredLog.Errorf("Logging setup failed: %s", err.Error())
+		os.Exit(501)
 	}
+}
 
-	tracer, closer, tracerErr := cfg.NewTracer()
-	if tracerErr != nil {
-		fmt.Printf("ERROR - Create new tracer failed: %s", tracerErr.Error())
-		panic(tracerErr)
+func loadConfig() *config.Config {
+	logging.Log.Debug("Load configurations")
+	return config.LoadConfig()
+}
+
+func startMonitoringServer() *monitoring.Server {
+	logging.Log.Debug("Start monitoring")
+	server := monitoring.New()
+	logging.Log.Debug("Monitoring server successfully created")
+
+	server.Start()
+	logging.Log.Debug("Monitoring successfully started")
+
+	return server
+}
+
+func initJaegerTracer() io.Closer {
+	logging.Log.Debug("Init Jaeger tracer")
+	closer, err := tracing.InitTracer()
+	if err != nil {
+		logging.SugaredLog.Errorf("Jaeger tracer setup failed: %s", err.Error())
+		os.Exit(501)
 	}
-	opentracing.SetGlobalTracer(tracer)
 	return closer
 }
 
-func doWork(ctx context.Context) {
-	span, _ := opentracing.StartSpanFromContext(ctx, "simple-operation-doWork")
-	defer span.Finish()
-
-	// sleep to simulate work
-	time.Sleep(3 * time.Second)
-
-	var tracingMsg string
-	traceID, sampled := ExtractSampledTraceID(ctx)
-	if !sampled {
-		tracingMsg = "traceID not sampled"
-	} else {
-		tracingMsg = fmt.Sprintf("traceID %s", traceID)
+func initZipkinTracer() reporter.Reporter {
+	logging.Log.Debug("Init Zipkin tracer")
+	zReporter, err := tracing.InitTestingZipkin(commons.ServiceName, zipkinHost, zipkinPort)
+	if err != nil {
+		logging.SugaredLog.Errorf("Zipkin tracer setup failed: %s", err.Error())
+		os.Exit(501)
 	}
-	fmt.Printf("INFO - Work done - %s \n", tracingMsg)
+	return zReporter
 }
 
-// ExtractSampledTraceID works like ExtractTraceID but the returned bool is only true if the returned trace id is sampled.
-// copied from https://github.com/weaveworks/common/blob/master/middleware/http_tracing.go
-func ExtractSampledTraceID(ctx context.Context) (string, bool) {
-	sp := opentracing.SpanFromContext(ctx)
-	if sp == nil {
-		return "", false
-	}
+func startWorker() *worker.Worker {
+	logging.Log.Debug("Start worker")
 
-	spanCtx, ok := sp.Context().(jaeger.SpanContext)
-	if !ok {
-		return "", false
+	work, newErr := worker.New()
+	if newErr != nil {
+		logging.SugaredLog.Errorf("Worker creation failed: %s", newErr.Error())
+		os.Exit(501)
 	}
+	logging.Log.Debug("Worker successfully created")
 
-	return spanCtx.TraceID().String(), spanCtx.IsSampled()
+	startErr := work.Start()
+	if startErr != nil {
+		logging.SugaredLog.Errorf("Worker start failed: %s", startErr.Error())
+		os.Exit(501)
+	}
+	logging.Log.Debug("Worker successfully started")
+
+	return work
 }
 
 func startSysCallChannel() {
@@ -90,9 +128,26 @@ func startSysCallChannel() {
 	<-syscallCh
 }
 
-func closeTracer(closer io.Closer) {
-	err := closer.Close()
-	if err != nil {
-		fmt.Printf("ERROR - Close tracer failed: %s", err.Error())
+func shutdownAndWait(timeout int) {
+	logging.SugaredLog.Warnf("Termination signal received! Timeout %d", timeout)
+
+	if jaegerCloser != nil {
+		err := jaegerCloser.Close()
+		if err != nil {
+			logging.SugaredLog.Errorf("Jaeger tracer closure failed: %s", err.Error())
+		}
 	}
+
+	if zipkinReporter != nil {
+		err := zipkinReporter.Close()
+		if err != nil {
+			logging.SugaredLog.Errorf("Zipkin tracer closure failed: %s", err.Error())
+		}
+	}
+
+	if monitoringServer != nil {
+		monitoringServer.Shutdown(timeout)
+	}
+
+	time.Sleep(time.Duration(timeout+1) * time.Second)
 }

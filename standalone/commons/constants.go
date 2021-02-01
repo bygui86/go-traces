@@ -3,7 +3,7 @@ package commons
 import "time"
 
 const (
-	ServiceName = "kafka-consumer"
+	ServiceName = "standalone"
 
 	HttpServerHostFormat          = "%s:%d"
 	HttpServerWriteTimeoutDefault = time.Second * 15

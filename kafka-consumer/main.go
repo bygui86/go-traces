@@ -9,6 +9,7 @@ import (
 
 	"github.com/openzipkin/zipkin-go/reporter"
 
+	"github.com/bygui86/go-traces/kafka-consumer/commons"
 	"github.com/bygui86/go-traces/kafka-consumer/config"
 	"github.com/bygui86/go-traces/kafka-consumer/consumer"
 	"github.com/bygui86/go-traces/kafka-consumer/logging"
@@ -17,8 +18,6 @@ import (
 )
 
 const (
-	serviceName = "kafka-consumer"
-
 	zipkinHost = "localhost"
 	zipkinPort = 9411
 )
@@ -33,7 +32,7 @@ var (
 func main() {
 	initLogging()
 
-	logging.SugaredLog.Infof("Start %s", serviceName)
+	logging.SugaredLog.Infof("Start %s", commons.ServiceName)
 
 	cfg := loadConfig()
 
@@ -52,7 +51,7 @@ func main() {
 
 	kafkaConsumer = startConsumer()
 
-	logging.SugaredLog.Infof("%s up and running", serviceName)
+	logging.SugaredLog.Infof("%s up and running", commons.ServiceName)
 
 	startSysCallChannel()
 
@@ -95,7 +94,7 @@ func initJaegerTracer() io.Closer {
 
 func initZipkinTracer() reporter.Reporter {
 	logging.Log.Debug("Init Zipkin tracer")
-	zReporter, err := tracing.InitTestingZipkin(serviceName, zipkinHost, zipkinPort)
+	zReporter, err := tracing.InitTestingZipkin(commons.ServiceName, zipkinHost, zipkinPort)
 	if err != nil {
 		logging.SugaredLog.Errorf("Zipkin tracer setup failed: %s", err.Error())
 		os.Exit(501)
@@ -105,7 +104,7 @@ func initZipkinTracer() reporter.Reporter {
 
 func startConsumer() *consumer.KafkaConsumer {
 	logging.Log.Debug("Start consumer")
-	kConsumer, newErr := consumer.New(serviceName)
+	kConsumer, newErr := consumer.New(commons.ServiceName)
 	if newErr != nil {
 		logging.SugaredLog.Errorf("Consumer setup failed: %s", newErr.Error())
 		os.Exit(501)
