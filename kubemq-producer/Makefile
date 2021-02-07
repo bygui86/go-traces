@@ -10,35 +10,13 @@ export GO111MODULE = on
 
 # ACTIONS
 
-## infra
-
-run-kubemq :		## Run Minikube and deploy KubeMQ
-	minikube start --vm-driver=hyperkit --cpus=4 --memory=8192 --disk-size=20g --enable-default-cni --network-plugin=cni --extra-config=kubelet.network-plugin=cni
-	@sleep 30s
-	kubectl apply -f https://get.kubemq.io/deploy
-	@sleep 30s
-	kubectl get kubemqclusters,kubemqdashboards -n kubemq
-
-stop-kubemq :		## Stop Minikube and KubeMQ
-	minikube stop
-
-proxy-kubemq :		## Proxy KubeMQ
-	kubemqctl set cluster proxy
-
-open-kubemq-ui :		## Open KubeMQ UI in browser
-	kubemqctl get dashboard
-
-
 ## application
 
 build :		## Build application
 	go build
 
-run :		## Run application from source code
-	godotenv -f local.env go run main.go
 
-
-## containerisation
+## container
 
 __check-container-tag :
 	@[ "$(CONTAINER_TAG)" ] || ( echo "Missing container tag (CONTAINER_TAG), please define it and retry"; exit 1 )

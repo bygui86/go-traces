@@ -10,29 +10,13 @@ export GO111MODULE = on
 
 # ACTIONS
 
-## infra
-
-run-kafka :		## Run Apache Zookeeper and Apache Kafka in containers
-	docker swarm init
-	docker stack deploy kafka -c kafka_docker-compose.yml
-
-stop-kafka :		## Stop Apache Zookeeper and Apache Kafka in containers
-	docker stack rm kafka
-	@sleep 30
-	docker swarm leave --force
-
-
 ## application
 
 build :		## Build application
 	go build
 
-run :		## Run application from source code
-	@export KAFKA_BOOTSTRAP_SERVERS=$$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $$2}') && \
-	godotenv -f local.env go run main.go
 
-
-## containerisation
+## container
 
 __check-container-tag :
 	@[ "$(CONTAINER_TAG)" ] || ( echo "Missing container tag (CONTAINER_TAG), please define it and retry"; exit 1 )
