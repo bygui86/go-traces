@@ -10,9 +10,15 @@ import (
 )
 
 func (db *InMemoryDb) GetProducts(start, count int, ctx context.Context) ([]*Product, error) {
+	parentSpan := opentracing.SpanFromContext(ctx)
+	var parentCtx opentracing.SpanContext
+	if parentSpan != nil {
+		parentCtx = parentSpan.Context()
+	}
 	span := opentracing.StartSpan(
 		"get-products-db",
-		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
+		opentracing.ChildOf(parentCtx),
+	)
 	defer span.Finish()
 
 	query := fmt.Sprintf("all-start[%d]-count[%d]", start, count)
@@ -37,9 +43,15 @@ func (db *InMemoryDb) GetProducts(start, count int, ctx context.Context) ([]*Pro
 }
 
 func (db *InMemoryDb) GetProduct(product *Product, ctx context.Context) *Product {
+	parentSpan := opentracing.SpanFromContext(ctx)
+	var parentCtx opentracing.SpanContext
+	if parentSpan != nil {
+		parentCtx = parentSpan.Context()
+	}
 	span := opentracing.StartSpan(
 		"get-product-db",
-		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
+		opentracing.ChildOf(parentCtx),
+	)
 	defer span.Finish()
 
 	span.SetTag("product-id", product.ID)
@@ -49,9 +61,15 @@ func (db *InMemoryDb) GetProduct(product *Product, ctx context.Context) *Product
 }
 
 func (db *InMemoryDb) CreateProduct(product *Product, ctx context.Context) error {
+	parentSpan := opentracing.SpanFromContext(ctx)
+	var parentCtx opentracing.SpanContext
+	if parentSpan != nil {
+		parentCtx = parentSpan.Context()
+	}
 	span := opentracing.StartSpan(
 		"create-product-db",
-		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
+		opentracing.ChildOf(parentCtx),
+	)
 	defer span.Finish()
 
 	span.SetTag("product", product.String())
@@ -67,9 +85,15 @@ func (db *InMemoryDb) CreateProduct(product *Product, ctx context.Context) error
 }
 
 func (db *InMemoryDb) UpdateProduct(product *Product, ctx context.Context) error {
+	parentSpan := opentracing.SpanFromContext(ctx)
+	var parentCtx opentracing.SpanContext
+	if parentSpan != nil {
+		parentCtx = parentSpan.Context()
+	}
 	span := opentracing.StartSpan(
 		"update-product-db",
-		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
+		opentracing.ChildOf(parentCtx),
+	)
 	defer span.Finish()
 
 	span.SetTag("product", product.String())
@@ -88,9 +112,15 @@ func (db *InMemoryDb) UpdateProduct(product *Product, ctx context.Context) error
 }
 
 func (db *InMemoryDb) DeleteProduct(productId string, ctx context.Context) error {
+	parentSpan := opentracing.SpanFromContext(ctx)
+	var parentCtx opentracing.SpanContext
+	if parentSpan != nil {
+		parentCtx = parentSpan.Context()
+	}
 	span := opentracing.StartSpan(
 		"delete-product-db",
-		opentracing.ChildOf(opentracing.SpanFromContext(ctx).Context()))
+		opentracing.ChildOf(parentCtx),
+	)
 	defer span.Finish()
 
 	span.SetTag("product-id", productId)
