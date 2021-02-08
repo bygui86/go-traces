@@ -10,13 +10,14 @@
 
 # ACTIONS
 
+	# protoc --proto_path=./grpc-protobuf/ --go_out=plugins=grpc:./grpc-protobuf ./grpc-protobuf/*
 build :		## Compile protobuf
 	rm -f ./*.pb.go
 	rm -f ../grpc-server/grpc_interface/*.pb.go
 	rm -f ../grpc-client/grpc_interface/*.pb.go
-	protoc --proto_path=./ --go_out=plugins=grpc:./ ./*
-	cp ../grpc-protobuf/*.pb.go ./grpc-server/grpc_interface/
-	cp ../grpc-protobuf/*.pb.go ./grpc-client/grpc_interface/
+	protoc -I=./ --go_out=plugins=grpc:./ ./*.proto
+	cp ./*.pb.go ../grpc-server/grpc_interface/
+	cp ./*.pb.go ../grpc-client/grpc_interface/
 
 
 ## helpers
