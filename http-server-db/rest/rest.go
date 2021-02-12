@@ -18,13 +18,23 @@ func New(enableTracing bool) (*Server, error) {
 	var db *sql.DB
 	var dbErr error
 	if enableTracing {
-		// db, dbErr = database.NewWithOcsqlTracing() // WARN: does not work
 		db, dbErr = database.NewWithWrappedTracing()
 	} else {
 		db, dbErr = database.New()
 	}
 	if dbErr != nil {
 		return nil, dbErr
+	}
+
+	pingErr := database.PingDb(db, 10)
+	if pingErr != nil {
+		logging.SugaredLog.Errorf("PostgreSQL connection failed: %s", pingErr.Error())
+		panic(pingErr)
+	}
+
+	initErr := database.InitDb(db)
+	if initErr != nil {
+		return nil, initErr
 	}
 
 	server := &Server{
