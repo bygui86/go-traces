@@ -15,6 +15,9 @@ export GO111MODULE = on
 build :		## Build application
 	go build
 
+run :		## Run application
+	godotenv -f local.env go run main.go
+
 
 ## container
 
